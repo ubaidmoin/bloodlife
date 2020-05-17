@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, StatusBar, Dimensions, Image, TouchableOpacity,
 import { Button } from 'react-native-paper';
 import { Picker } from '@react-native-community/picker';
 import { connect } from 'react-redux';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
@@ -175,10 +176,10 @@ class Request extends Component {
                             lastName: donor.data().lastName,
                             ratings: donor.data().ratings,
                             phoneNo: donor.data().phoneNo,
-                            image: donor.data().image,
                             city: donor.data().city,
                             address: donor.data().address,
                             bloodGroup: donor.data().bloodGroup,
+                            image: donor.data().image,
                             lat: donor.data().lat,
                             lng: donor.data().lng
                         },

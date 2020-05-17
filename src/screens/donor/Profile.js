@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ImageBackground, Dimensions, Image, Permission } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator, Dimensions, Image, Permission } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import ImagePicker from 'react-native-image-picker';
 import { connect } from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 
@@ -18,23 +20,24 @@ class Profile extends Component {
         super(props);
 
         this.state = {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phoneNo: '',
-            dob: '',
-            password: '',
-            address: '',
-            weight: '',
-            lastDonated: '',
-            image: '',
+            firstName: props.userDetails.firstName,
+            lastName: props.userDetails.lastName,
+            email: props.userDetails.email,
+            phoneNo: props.userDetails.phoneNo,
+            dob: props.userDetails.dob,
+            password: props.userDetails.password,
+            address: props.userDetails.address,
+            city: props.userDetails.city,
+            weight: props.userDetails.weight,
+            lastDonated: props.userDetails.lastDonated,
+            image: props.userDetails.image,
             modal: false,
-            bloodGroup: '',
+            bloodGroup: props.userDetails.bloodGroup,
             userDetails: props.userDetails
         }
     }
 
-    componentDidMount() {
+    componentDidMount() {        
     }
 
     pickImage() {
@@ -59,160 +62,212 @@ class Profile extends Component {
         });
     }
 
+    updateProfile() {
+        this.setState({
+            loading: true
+        })
+        firestore().collection('Users').doc(this.state.userDetails.id)
+            .get()
+            .then((querySnapshot) => {
+                firestore().collection('Users').doc(querySnapshot.data().id).update({
+                    phoneNo: this.state.phoneNo,
+                    address: this.state.address,
+                    image: this.state.image,
+                    weight: this.state.weight
+                }).then(() => {
+                    firestore().collection('Users').doc(this.state.userDetails.id)
+                        .get()
+                        .then(user => {
+                            this.setState({
+                                loading: false
+                            })
+                            let userDetails = {
+                                id: user.id,
+                                firstName: user.data().firstName,
+                                lastName: user.data().lastName,
+                                email: user.data().email,
+                                phoneNo: user.data().phoneNo,
+                                userType: user.data().userType,
+                                ratings: user.data().ratings,
+                                dob: user.data().dob,
+                                address: user.data().address,
+                                image: user.data().image,
+                                weight: user.data().weight,
+                                lastDonated: user.data().lastDonated,
+                                bloodGroup: user.data().bloodGroup
+                            }
+                            const setUser = this.props.setUserData;
+                            setUser(userDetails);
+                        })
+                    alert('Profile Updated.');
+                });
+            })
+    }
+
     render() {
-        const { container, modalStyle } = styles;
-        const { userDetails } = this.state;
+        const { container, textStyle } = styles;
+        const { firstName, lastName, email, dob, phoneNo, address, image, lastDonated, weight, bloodGroup, city } = this.state;
         return (
             <KeyboardAvoidingView style={container}>
-                <ScrollView style={{width: Dimensions.get('screen').width}} contentContainerStyle={{alignItems: 'center', justifyContent: 'center',}}>
-                <TouchableOpacity onPress={() => this.pickImage()}>
-                    <Image source={
-                        (this.state.image === '') ?
-                            require('../../assets/img/user.jpg') :
-                            { uri: 'data:image/jpeg;base64,' + this.state.image }
-                    }
-                        style={styles.imageStyle}
-                    />
-                </TouchableOpacity>
-                <View style={{ flexDirection: 'row', }}>
+                <ScrollView style={{ width: Dimensions.get('screen').width }} contentContainerStyle={{ alignItems: 'center', justifyContent: 'center', }}>
+                    <TouchableOpacity onPress={() => this.pickImage()}>
+                        <Image source={
+                            (image === '') ?
+                                require('../../assets/img/user.jpg') :
+                                { uri: 'data:image/jpeg;base64,' + image }
+                        }
+                            style={styles.imageStyle}
+                        />
+                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', }}>
+                        <TextInput
+                            label='First Name'
+                            mode='outlined'
+                            style={{
+                                height: 40,
+                                width: '39%',
+                            }}
+                            theme={{
+                                colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                            }}
+                            selectionColor='#ff5d5b'
+                            underlineColor='#ff5d5b'
+                            value={firstName}
+                            onChangeText={firstName => this.setState({ firstName })}
+                            disabled={true}
+                        />
+                        <TextInput
+                            label='Last Name'
+                            mode='outlined'
+                            style={{
+                                height: 40,
+                                width: '39%',
+                                marginLeft: '2%'
+                            }}
+                            theme={{
+                                colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                            }}
+                            selectionColor='#ff5d5b'
+                            underlineColor='#ff5d5b'
+                            value={lastName}
+                            onChangeText={lastName => this.setState({ lastName })}
+                            disabled
+                        /></View>
                     <TextInput
-                        label='First Name'
+                        label='Email'
                         mode='outlined'
-                        style={{
-                            height: 40,
-                            width: '39%',
-                        }}
+                        style={styles.textInputStyle}
                         theme={{
                             colors: { primary: '#ff5d5b', underlineColor: 'black' }
                         }}
                         selectionColor='#ff5d5b'
                         underlineColor='#ff5d5b'
-                        value={userDetails.firstName}
-                        onChangeText={firstName => this.setState({ firstName })}
-                        disabled={true}
-                    />
-                    <TextInput
-                        label='Last Name'
-                        mode='outlined'
-                        style={{
-                            height: 40,
-                            width: '39%',
-                            marginLeft: '2%'
-                        }}
-                        theme={{
-                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                        }}
-                        selectionColor='#ff5d5b'
-                        underlineColor='#ff5d5b'
-                        value={userDetails.lastName}
-                        onChangeText={lastName => this.setState({ lastName })}
+                        value={email}
+                        onChangeText={email => this.setState({ email })}
                         disabled
-                    /></View>
-                <TextInput
-                    label='Email'
-                    mode='outlined'
-                    style={styles.textInputStyle}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={userDetails.email}
-                    onChangeText={email => this.setState({ email })}
-                    disabled
-                />
-                <TextInput
-                    label='Phone No.'
-                    mode='outlined'
-                    style={styles.textInputStyle}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={userDetails.phoneNo}
-                    onChangeText={phoneNo => this.setState({ phoneNo })}
-
-                />
-                <TextInput
-                    label='Date of Birth'
-                    mode='outlined'
-                    style={styles.textInputStyle}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={this.state.dob}
-                    disabled
-                />
-                <TextInput
-                    label='Address'
-                    mode='outlined'
-                    style={{
-                        height: 60,
-                        width: '80%',
-                    }}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={this.state.address}
-                    onChangeText={address => this.setState({ address })}
-                    multiline                    
-                />
-                <TextInput
-                    label='Blood Group'
-                    mode='outlined'
-                    style={styles.textInputStyle}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={this.state.bloodGroup}
-                    onChangeText={bloodGroup => this.setState({ bloodGroup })}
-                    disabled
-                />                
-                <TextInput
-                    label='Weight'
-                    mode='outlined'
-                    style={styles.textInputStyle}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={this.state.weight}
-                    keyboardType={"number-pad"}
-                    onChangeText={weight => this.setState({ weight })}  
-                    disabled                  
-                />
-                <TextInput
-                    label='Last Donated'
-                    mode='outlined'
-                    style={styles.textInputStyle}
-                    theme={{
-                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                    }}
-                    selectionColor='#ff5d5b'
-                    underlineColor='#ff5d5b'
-                    value={this.state.lastDonated}
-                    onChangeText={lastDonated => this.setState({ lastDonated })}
-                    disabled
-                />
-                <View style={{ paddingTop: 10 }}>
-                    <Button
+                    />
+                    <TextInput
+                        label='Phone No.'
+                        mode='outlined'
+                        style={styles.textInputStyle}
                         theme={{
                             colors: { primary: '#ff5d5b', underlineColor: 'black' }
                         }}
-                        mode='contained'
-                        onPress={() => this.props.navigation.navigate('Home')}
-                    >
-                        Update
-                </Button>
-                </View>
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={phoneNo}
+                        onChangeText={phoneNo => this.setState({ phoneNo })}
+
+                    />
+                    <TextInput
+                        label='Date of Birth'
+                        mode='outlined'
+                        style={styles.textInputStyle}
+                        theme={{
+                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                        }}
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={dob}
+                        disabled
+                    />
+                    <TextInput
+                        label='Address'
+                        mode='outlined'
+                        style={styles.textInputStyle}
+                        theme={{
+                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                        }}
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={address}
+                        onChangeText={address => this.setState({ address })}
+                    />
+                    <TextInput
+                        label='City'
+                        mode='outlined'
+                        style={styles.textInputStyle}
+                        theme={{
+                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                        }}
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={city}
+                        onChangeText={city => this.setState({ city })}
+                    />
+                    <TextInput
+                        label='Blood Group'
+                        mode='outlined'
+                        style={styles.textInputStyle}
+                        theme={{
+                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                        }}
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={bloodGroup}
+                        onChangeText={bloodGroup => this.setState({ bloodGroup })}
+                        disabled
+                    />
+                    <TextInput
+                        label='Weight'
+                        mode='outlined'
+                        style={styles.textInputStyle}
+                        theme={{
+                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                        }}
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={weight}
+                        keyboardType={"number-pad"}
+                        onChangeText={weight => this.setState({ weight })}
+                    />
+                    <TextInput
+                        label='Last Donated'
+                        mode='outlined'
+                        style={styles.textInputStyle}
+                        theme={{
+                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                        }}
+                        selectionColor='#ff5d5b'
+                        underlineColor='#ff5d5b'
+                        value={lastDonated}
+                        onChangeText={lastDonated => this.setState({ lastDonated })}
+                        disabled
+                    />
+                    <View style={{ paddingTop: 10, paddingBottom: 10 }}>
+                        <TouchableOpacity
+                            style={(this.state.loading) ? styles.buttonLoadingStyle : styles.buttonStyle}
+                            disabled={this.state.loading}
+                            onPress={() => this.updateProfile()}
+                        >
+                            {(this.state.loading) ?
+                                <ActivityIndicator size="small" color="#ff5d5b" /> :
+                                <Text style={textStyle}>
+                                    {'update'.toUpperCase()}
+                                </Text>
+                            }
+                        </TouchableOpacity>
+                    </View>
                 </ScrollView>
             </KeyboardAvoidingView>
         );
@@ -252,6 +307,29 @@ const styles = StyleSheet.create({
     textInputStyle: {
         height: 40,
         width: '80%',
+    },
+    textStyle: {
+        color: 'white'
+    },
+    buttonStyle: {
+        backgroundColor: '#ff5d5b',
+        height: 30,
+        paddingHorizontal: 20,
+        borderWidth: 1,
+        borderColor: '#fea39e',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5
+    },
+    buttonLoadingStyle: {
+        backgroundColor: '#ffffff',
+        height: 30,
+        paddingHorizontal: 20,
+        borderWidth: 1,
+        borderColor: '#fea39e',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5
     }
 })
 

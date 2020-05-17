@@ -2,15 +2,16 @@ import * as Actions from '../actions/ActionTypes';
 
 const initialState = {
     id: 1,
-    firstName: 'Ubaid',
-    lastName: 'Ullah',
-    email: 'tanwer.ubaid@gmail.com',
+    firstName: 'Admin',
+    lastName: '',
+    email: 'admin',
     phoneNo: '03325320328',    
-    userType: 'Donor' ,
+    userType: 'admin' ,
+    image: '',
     ratings: 4.75
 }
 
-const UserDetailsReducer = (state ={userDetails: initialState},action) => {          
+const UserDetailsReducer = (state ={userDetails: initialState},action) => {              
     switch (action.type){        
         case Actions.SET_USER_DATA:                     
             return {

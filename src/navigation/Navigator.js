@@ -7,18 +7,31 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 
 import LoginScreen from '../screens/auth/Login';
 import RegisterScreen from '../screens/auth/Register';
+import ForgotPasswordScreen from '../screens/auth/ForgotPassword';
 import BecomeDonorScreen from '../screens/BecomeDonor';
 import EventScreen from '../screens/common/Events';
 import HistoryScreen from '../screens/common/History';
 import ContactsScreen from '../screens/common/EmergencyContacts';
+import FeedbackScreen from '../screens/common/Feedback';
 //Donor Screens
 import DonorHomeScreen from '../screens/donor/Home';
 import ProfileScreen from '../screens/donor/Profile';
+import DonateNowScreen from '../screens/donor/DonateNow';
+import DonorRequestScreen from '../screens/donor/Request';
 
 //Receiver Screens
 import ReceiverHomeScreen from '../screens/receiver/Home';
 import RequestScreen from '../screens/receiver/Request';
 import ProfileReceiverScreen from '../screens/receiver/Profile';
+
+//Admin Screens
+import AdminHomeScreen from '../screens/admin/Donors';
+import AdminEventsScreen from '../screens/admin/Events';
+import AdminDonationScreen from '../screens/admin/Donations';
+import AdminComplaintsScreen from '../screens/admin/Complaints';
+import AdminFeedbacksScreen from '../screens/admin/Feedbacks';
+import AdminProfileScreen from '../screens/admin/Profile';
+import AdminAddDonorScreen from '../screens/admin/AddDonor';
 
 //Drawer Content
 import DrawerContent from '../components/common/DrawerContent';
@@ -59,9 +72,68 @@ const HeaderWithBackButton = ({ title }, navigation) => ({
   }
 })
 
+const AdminHomeStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="AdminHome" 
+    component={AdminHomeScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Home' }, navigation)}  />
+    <Stack.Screen name="AddDonor" 
+    component={AdminAddDonorScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Add Donor' }, navigation)}  />
+    <Stack.Screen name="AdminProfile" 
+    component={AdminProfileScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Profile' }, navigation)}  />
+  </Stack.Navigator>
+)
+
+const AdminEventsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Events" 
+    component={AdminEventsScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Events' }, navigation)}  />
+  </Stack.Navigator>
+)
+
+const AdminDonationsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="DonationOptions" 
+    component={AdminDonationScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Donation Options' }, navigation)}  />
+  </Stack.Navigator>
+)
+
+
+const AdminComplaintsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="AdminHome" 
+    component={AdminComplaintsScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Complaints' }, navigation)}  />
+  </Stack.Navigator>
+)
+
+const AdminFeedbacksStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="AdminFeedbacks" 
+    component={AdminFeedbacksScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Feedbacks' }, navigation)}  />
+  </Stack.Navigator>
+)
+
+const AdminDrawer = () => (
+  <Drawer.Navigator drawerContent={props => <DrawerContent user='admin' {...props} />} drawerContentOptions={drawerStyles}>
+    <Drawer.Screen name="AdminHome" component={AdminHomeStack} options={{title: 'Home'}} />    
+    <Drawer.Screen name="DonationOptions" component={AdminDonationsStack} options={{title: 'Donation Options'}} />
+    <Drawer.Screen name="AdminEvents" component={AdminEventsStack} options={{title: 'Events'}} />    
+    <Drawer.Screen name="Complaints" component={AdminComplaintsStack} options={{title: 'Complaints'}} />
+    <Drawer.Screen name="Feedbacks" component={AdminFeedbacksStack} options={{title: 'Feedbacks'}} />
+    {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
+  </Drawer.Navigator>
+);
+
 const AuthDrawer = () => (
   <Drawer.Navigator>
     <Drawer.Screen name="Login" component={LoginScreen} options={lockedDrawerOptions} />
+    <Drawer.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={lockedDrawerOptions} />
     <Drawer.Screen name="Register" component={RegisterScreen} options={lockedDrawerOptions} />
   </Drawer.Navigator>
 )
@@ -71,14 +143,23 @@ const DonorStack = () => (
     <Stack.Screen name="Home" 
     component={DonorHomeScreen} 
     options={({navigation}) => HeaderWithMenu({ title: 'Home' }, navigation)}  />
+    <Stack.Screen name="DonorRequest" 
+    component={DonorRequestScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Request' }, navigation)} />
+    <Stack.Screen name="Profile" 
+    component={ProfileScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Profile' }, navigation)}  />
+    <Stack.Screen name="DonorEmergencyContacts" 
+    component={ContactsScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Emergency Contacts' }, navigation)}  />
   </Stack.Navigator>
 )
 
-const ProfileDonorStack = () => (
+const DonateNowStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="Profile" 
-    component={ProfileScreen} 
-    options={({navigation}) => HeaderWithMenu({ title: 'Profile' }, navigation)}  />
+    <Stack.Screen name="DonateNow" 
+    component={DonateNowScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Donate Now' }, navigation)}  />
   </Stack.Navigator>
 )
 
@@ -90,11 +171,11 @@ const EventDonorStack = () => (
   </Stack.Navigator>
 )
 
-const ContactDonorStack = () => (
+const FeedbackDonorStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="Emergency Contacts" 
-    component={ContactsScreen} 
-    options={({navigation}) => HeaderWithMenu({ title: 'Emergency Contacts' }, navigation)}  />
+    <Stack.Screen name="Feedback" 
+    component={FeedbackScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Feedback' }, navigation)}  />
   </Stack.Navigator>
 )
 
@@ -108,12 +189,12 @@ const HistoryDonorStack = () => (
 
 const DonorDrawer = () => (
   <Drawer.Navigator drawerContent={props => <DrawerContent user='donor' {...props} />} drawerContentOptions={drawerStyles}>
-    <Drawer.Screen name="DonorHome" component={DonorStack} options={{title: 'Home'}} />
-    <Drawer.Screen name="Profile" component={ProfileDonorStack} options={{title: 'Profile'}} />
-    <Drawer.Screen name="Events" component={EventDonorStack} options={{title: 'Events'}} />
-    <Drawer.Screen name="EmergencyContacts" component={ContactDonorStack} options={{title: 'Emergency Contacts'}} />
+    <Drawer.Screen name="DonorHome" component={DonorStack} options={{title: 'Home'}} />    
+    <Drawer.Screen name="DonateNow" component={DonateNowStack} options={{title: 'Donate Now'}} />        
+    <Drawer.Screen name="Events" component={EventDonorStack} options={{title: 'Events'}} />    
     <Drawer.Screen name="History" component={HistoryDonorStack} options={{title: 'Donation History'}} />
-    <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />
+    <Drawer.Screen name="Feedback" component={FeedbackDonorStack} options={{title: 'Feedback'}} />        
+    {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
   </Drawer.Navigator>
 )
 
@@ -125,14 +206,15 @@ const ReceiverStack = () => (
     <Stack.Screen name="Request" 
     component={RequestScreen} 
     options={({navigation}) => HeaderWithBackButton({ title: 'Request' }, navigation)} />
-  </Stack.Navigator>
-)
-
-const ProfileReceiverStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Profile" 
+    <Stack.Screen name="BecomeDonor" 
+    component={BecomeDonorScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Become a Donor' }, navigation)}  />
+    <Stack.Screen name="ReceiverProfile" 
     component={ProfileReceiverScreen} 
-    options={({navigation}) => HeaderWithMenu({ title: 'Profile' }, navigation)}  />
+    options={({navigation}) => HeaderWithBackButton({ title: 'Profile' }, navigation)}  />
+    <Stack.Screen name="ReceiverEmergencyContacts" 
+    component={ContactsScreen} 
+    options={({navigation}) => HeaderWithBackButton({ title: 'Emergency Contacts' }, navigation)}  />
   </Stack.Navigator>
 )
 
@@ -144,11 +226,19 @@ const EventReceiverStack = () => (
   </Stack.Navigator>
 )
 
-const ContactReceiverStack = () => (
+const FeedbackReceiverStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="Emergency Contacts" 
-    component={ContactsScreen} 
-    options={({navigation}) => HeaderWithMenu({ title: 'Emergency Contacts' }, navigation)}  />
+    <Stack.Screen name="Feedback" 
+    component={FeedbackScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Feedback' }, navigation)}  />
+  </Stack.Navigator>
+)
+
+const ReceiverDonateNowStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="ReceiverDonateNow" 
+    component={DonateNowScreen} 
+    options={({navigation}) => HeaderWithMenu({ title: 'Donate Now' }, navigation)}  />
   </Stack.Navigator>
 )
 
@@ -160,23 +250,14 @@ const HistoryReceiverStack = () => (
   </Stack.Navigator>
 )
 
-const BecomeDonorStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="BecomeDonor" 
-    component={BecomeDonorScreen} 
-    options={({navigation}) => HeaderWithMenu({ title: 'Become a donor' }, navigation)}  />
-  </Stack.Navigator>
-)
-
 const ReceiverDrawer = () => (
   <Drawer.Navigator drawerContent={props => <DrawerContent user='receiver' {...props} />} drawerContentOptions={drawerStyles}>
-    <Drawer.Screen name="ReceiverHome" component={ReceiverStack} options={{title: 'Home'}} />
-    <Drawer.Screen name="Profile" component={ProfileReceiverStack} options={{title: 'Profile'}} />
-    <Drawer.Screen name="Events" component={EventReceiverStack} options={{title: 'Events'}} />
-    <Drawer.Screen name="EmergencyContacts" component={ContactReceiverStack} options={{title: 'Emergency Contacts'}} />
-    <Drawer.Screen name="History" component={HistoryReceiverStack} options={{title: 'History'}} />
-    <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />
-    <Drawer.Screen name="BecomeDonor" component={BecomeDonorStack} options={{drawerLabel: () => null}} />
+    <Drawer.Screen name="ReceiverHome" component={ReceiverStack} options={{title: 'Home'}} />    
+    <Drawer.Screen name="ReceiverDonateNow" component={ReceiverDonateNowStack} options={{title: 'Donate Now'}} />  
+    <Drawer.Screen name="ReceiverEvents" component={EventReceiverStack} options={{title: 'Events'}} />     
+    <Drawer.Screen name="ReceiverHistory" component={HistoryReceiverStack} options={{title: 'History'}} />   
+    <Drawer.Screen name="Feedback" component={FeedbackReceiverStack} options={{title: 'Feedback'}} />          
+    {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
   </Drawer.Navigator>
 )
 
@@ -187,6 +268,7 @@ function Navigator() {
         <Drawer.Screen name="Auth" component={AuthDrawer} options={lockedDrawerOptions} />        
         <Drawer.Screen name="DonorHome" component={DonorDrawer} />
         <Drawer.Screen name="ReceiverHome" component={ReceiverDrawer} />
+        <Drawer.Screen name="AdminHome" component={AdminDrawer} />
       </Drawer.Navigator>
     </NavigationContainer>
   );

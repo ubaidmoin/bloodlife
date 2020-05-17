@@ -2,16 +2,20 @@ import React, { Component } from 'react';
 import { View, Text, Animated, StyleSheet, Easing, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import * as userDetailsAction from '../../actions/UserDetailsAction';
+import * as actions from '../../actions/ActionTypes';
 
 class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
             opacity: new Animated.Value(0),
-            email: '',
-            password: '',
+            email: 'tabish.tashfeentt@gmail.com',
+            password: 'asdf1234',
             error: '',
             loading: false
         };
@@ -22,33 +26,176 @@ class Login extends Component {
         this.expand();
     }
 
-    expand = () => {
+    storeData = async (userDetails) => {
+        try {
+            await AsyncStorage.setItem('@userDetails', JSON.stringify(userDetails))
+        } catch (e) {
+        }
+    }
+
+    expand = async () => {
         Animated.timing(this.animatedValue, {
             toValue: 1,
             duration: 500,
             easing: Easing.bounce,
             useNativeDriver: true
         }).start();
-        setTimeout(() => {
-            Animated.timing(this.state.opacity, {
-                toValue: 1,
-                duration: 500,
-                easing: Easing.ease,
-                useNativeDriver: true
-            }).start();
-        }, 1000);
+        const value = await AsyncStorage.getItem('@userDetails');
+        if (value !== null) {
+            const userDetails = JSON.parse(value);
+            if (userDetails) {
+                const setUser = this.props.setUserData;
+                setUser(userDetails);
+                if (userDetails.userType === 'admin') {
+                    this.props.navigation.navigate('AdminHome');
+                } else if (userDetails.userType === 'receiver') {
+                    this.props.navigation.navigate('ReceiverHome');
+                } else {
+                    this.props.navigation.navigate('DonorHome');
+                }
+            }
+        }
+        else {
+            setTimeout(() => {
+                Animated.timing(this.state.opacity, {
+                    toValue: 1,
+                    duration: 500,
+                    easing: Easing.ease,
+                    useNativeDriver: true
+                }).start();
+            }, 1000);
+        }
     }
 
     onButtonPress() {
-        // this.setState({
-        //     loading: true
-        // })
-        const userDetails = this.props.userDetails;
-        console.log(userDetails);
-        if (userDetails.userType === 'Receiver') {
-            this.props.navigation.navigate('ReceiverHome');
+        this.setState({
+            loading: true
+        })
+        if (this.state.email.endsWith('.org')) {
+            auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+                .then((doc) => {
+                    firestore().collection('Users').get().then(doc => {
+                        doc.forEach((user) => {
+                            if (user.data().email === this.state.email && user.data().password === this.state.password && user.data().userType === 'admin') {
+                                let userDetails = {
+                                    id: user.data().id,
+                                    firstName: user.data().firstName,
+                                    lastName: user.data().lastName,
+                                    email: user.data().email,
+                                    phoneNo: user.data().phoneNo,
+                                    userType: user.data().userType,
+                                    ratings: user.data().ratings,
+                                    dob: user.data().dob,
+                                    address: user.data().address,
+                                    city: user.data().city,
+                                    image: user.data().image,
+                                    designation: user.data().designation,
+                                }
+                                const setUser = this.props.setUserData;
+                                setUser(userDetails);
+                                this.props.navigation.navigate('AdminHome');
+                            }
+                        })
+                        this.setState({
+                            loading: false,
+                            email: '',
+                            password: ''
+                        });
+                    })
+                })
+                .catch(() => {
+                    this.setState({
+                        loading: false,
+                        email: '',
+                        password: ''
+                    });
+                    alert('Invalid email or password.')
+                });
         } else {
-            this.props.navigation.navigate('DonorHome');
+            auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+                .then((doc) => {
+                    if (doc.user.emailVerified) {
+                        firestore().collection('Users').get().then(doc => {
+                            doc.forEach((user) => {
+                                if (user.data().blocked) {
+                                    alert('Your account has been blocked by admin.');
+                                } else {
+                                    if (user.data().email === this.state.email && user.data().userType === 'donor') {
+                                        let userDetails = {
+                                            id: user.id,
+                                            firstName: user.data().firstName,
+                                            lastName: user.data().lastName,
+                                            email: user.data().email,
+                                            phoneNo: user.data().phoneNo,
+                                            userType: user.data().userType,
+                                            ratings: user.data().ratings,
+                                            dob: user.data().dob,
+                                            address: user.data().address,
+                                            city: user.data().city,
+                                            image: user.data().image,
+                                            weight: user.data().weight,
+                                            lastDonated: user.data().lastDonated,
+                                            bloodGroup: user.data().bloodGroup,
+                                            disease: user.data().disease
+                                        }
+                                        const setUser = this.props.setUserData;
+                                        setUser(userDetails);
+                                        // const userDetails = this.props.userDetails;
+                                        this.storeData(this.props.userDetails);
+                                        if (userDetails.userType === 'receiver') {
+                                            this.props.navigation.navigate('ReceiverHome');
+                                        } else {
+                                            this.props.navigation.navigate('DonorHome');
+                                        }
+                                    } else if (user.data().email === this.state.email) {
+                                        let userDetails = {
+                                            id: user.id,
+                                            firstName: user.data().firstName,
+                                            lastName: user.data().lastName,
+                                            email: user.data().email,
+                                            phoneNo: user.data().phoneNo,
+                                            userType: user.data().userType,
+                                            ratings: user.data().ratings,
+                                            dob: user.data().dob,
+                                            address: user.data().address,
+                                            city: user.data().city,
+                                            image: user.data().image
+                                        }
+                                        const setUser = this.props.setUserData;
+                                        setUser(userDetails);
+                                        // const userDetails = this.props.userDetails;
+                                        this.storeData(this.props.userDetails);
+                                        if (userDetails.userType === 'receiver') {
+                                            this.props.navigation.navigate('ReceiverHome');
+                                        } else {
+                                            this.props.navigation.navigate('DonorHome');
+                                        }
+                                    }
+                                }
+                            });
+                            this.setState({
+                                loading: false,
+                                email: '',
+                                password: ''
+                            });
+                        })
+                    } else {
+                        this.setState({
+                            loading: false,
+                            email: '',
+                            password: ''
+                        });
+                        alert('Email not verified.');
+                    }
+                })
+                .catch(() => {
+                    this.setState({
+                        loading: false,
+                        email: '',
+                        password: ''
+                    });
+                    alert('Invalid email or password.')
+                });
         }
     }
 
@@ -114,7 +261,7 @@ class Login extends Component {
                             onPress={() => this.onButtonPress()}
                         >
                             {(this.state.loading) ?
-                                <ActivityIndicator size="small" /> :
+                                <ActivityIndicator size="small" color="#ff5d5b" /> :
                                 <Text style={styles.textStyle}>
                                     {'login'.toUpperCase()}
                                 </Text>
@@ -127,6 +274,13 @@ class Login extends Component {
                         onPress={() => this.props.navigation.navigate('Register')}>
                         <Text style={{ color: '#ff5d5b' }}>
                             Don't have an account?
+                    </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{ paddingTop: 10 }}
+                        onPress={() => this.props.navigation.navigate('ForgotPassword')}>
+                        <Text style={{ color: '#ff5d5b' }}>
+                            Forgot Password?
                     </Text>
                     </TouchableOpacity>
                 </Animated.View>

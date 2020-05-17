@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator, Dimensions, Image, Modal } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
+import TextInputMask from 'react-native-text-input-mask';
 import ImagePicker from 'react-native-image-picker';
 import { connect } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
@@ -27,6 +28,7 @@ class Profile extends Component {
             password: props.userDetails.password,
             userType: props.userDetails.userType,
             image: props.userDetails.image,
+            designation: props.userDetails.designation,
             address: props.userDetails.address,
             city: props.userDetails.city,
             modal: false,
@@ -71,7 +73,8 @@ class Profile extends Component {
                     phoneNo: this.state.phoneNo,
                     address: this.state.address,
                     city: this.state.city,
-                    image: this.state.image
+                    image: this.state.image,
+                    designation: this.state.designation
                 }).then(() => {
                     firestore().collection('Users').doc(this.state.userDetails.id)
                         .get()
@@ -102,7 +105,7 @@ class Profile extends Component {
 
     render() {
         const { container, textStyle } = styles;
-        const { userDetails, firstName, lastName, phoneNo, email, image, dob, address, city } = this.state;
+        const { designation, firstName, lastName, phoneNo, email, image, dob, address, city } = this.state;
         return (
             <KeyboardAvoidingView style={container}>
                 <TouchableOpacity onPress={() => this.pickImage()}>
@@ -162,8 +165,25 @@ class Profile extends Component {
                     disabled
                 />
                 <TextInput
+                    label='Designation'
+                    mode='outlined'
+                    style={styles.textInputStyle}
+                    theme={{
+                        colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                    }}
+                    selectionColor='#ff5d5b'
+                    underlineColor='#ff5d5b'
+                    value={designation}
+                    onChangeText={designation => this.setState({ designation })}                    
+                />
+                <TextInput
                     label='Phone No.'
                     mode='outlined'
+                    render={props =>
+                        <TextInputMask
+                            {...props}
+                            mask="+92 ([000]) [000] [0000]"
+                        />}
                     style={styles.textInputStyle}
                     theme={{
                         colors: { primary: '#ff5d5b', underlineColor: 'black' }

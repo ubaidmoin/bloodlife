@@ -4,6 +4,7 @@ import { DrawerItemList, DrawerContentScrollView } from '@react-navigation/drawe
 import { connect } from 'react-redux';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 
@@ -14,21 +15,32 @@ const DrawerContent = (props) => {
         <View style={styles.container}>
             <Image
                 style={styles.imageStyle}
-                source={require('../../assets/img/user.jpg')}
+                source={(userDetails.image !== "") ? { uri: 'data:image/jpeg;base64,' + userDetails.image } : require('../../assets/img/user.jpg')}
             />
             <View style={styles.details}>
                 <Text style={styles.textStyle}>{userDetails.firstName + ' ' + userDetails.lastName}</Text>
-                <View style={styles.ratings}>
+                {(userDetails.userType !== "admin") && <View style={styles.ratings}>
                     <Text style={styles.textStyle}>{userDetails.ratings}</Text>
                     <FontAwesomeIcon
                         name="star"
                         size={20}
                         color={"#ff5d5b"}
                     />
-                </View>
+                </View>}
+
+                {<TouchableOpacity style={styles.editProfileButton}
+                    onPress={() => props.navigation.navigate((userDetails.userType === 'receiver') ? 'ReceiverProfile' : (userDetails.userType === 'donor') ? 'Profile' : 'AdminProfile')}>
+                    <Text style={styles.editProfile}>Edit Profile</Text>
+                </TouchableOpacity>}
             </View>
         </View>
         <DrawerItemList {...props} />
+        <TouchableOpacity onPress={() => {
+            AsyncStorage.removeItem('@userDetails');
+            props.navigation.navigate('Auth');
+        }}>            
+            <Text style={styles.logoutButtonTextStyle}>Log out</Text>
+        </TouchableOpacity>
         {
             (props.user === "receiver") ?
                 <View style={styles.buttonContainer}>
@@ -82,10 +94,29 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold'
     },
+    logoutButtonTextStyle: {
+        marginLeft: 17.5,
+        marginVertical: 10,
+        color: '#696565',
+        fontSize: 14.25,
+        fontWeight: 'bold'
+    },
     ratings: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: -15
+    },
+    editProfile: {
+        color: 'white',
+        fontSize: 12,
+        fontWeight: 'bold'
+    },
+    editProfileButton: {
+        backgroundColor: '#ff5d5b',
+        paddingVertical: 1,
+        paddingHorizontal: 5,
+        borderRadius: 5,
+        alignItems: 'center'
     }
 })
 

@@ -22,8 +22,8 @@ class Home extends Component {
         super(props);
         this.state = {
             region: {
-                latitude: 33.5969,
-                longitude: 73.0528,
+                latitude: 33.5466,
+                longitude: 73.0545,
                 latitudeDelta: 0.05,
                 longitudeDelta: 0.05,
             },
@@ -44,12 +44,12 @@ class Home extends Component {
             loading: false,
             finding: '',
             selectedTab: -1,
-            bloodGroup: '',
+            bloodGroup: 'A+',
             bloodGroupOptions: [
                 { label: 'A+', value: 'A+' }, { label: 'B+', value: 'B+' }, { label: 'AB+', value: 'AB+' }, { label: 'O+', value: 'O+' },
                 { label: 'A-', value: 'A-' }, { label: 'B-', value: 'B-' }, { label: 'AB-', value: 'AB-' }, { label: 'O-', value: 'O-' },
             ],
-            numberOfBottles: 1
+            numberOfBottles: 0
         };
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     }
@@ -66,21 +66,7 @@ class Home extends Component {
                 }
             );
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                Geolocation.getCurrentPosition((position) => {
-                    var lat = parseFloat(position.coords.latitude)
-                    var long = parseFloat(position.coords.longitude)
-
-                    var region = {
-                        latitude: 33.5969,
-                        longitude: 73.0528,
-                        latitudeDelta: 0.05,
-                        longitudeDelta: 0.05,
-                    }
-
-                    this.setState({ region: region })
-                },
-                    (error) => alert(JSON.stringify(error)),
-                    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
+                this.getCurrentPosition();
             } else {
                 console.log("Location permission denied");
             }
@@ -117,9 +103,18 @@ class Home extends Component {
         region = {
             latitude: this.state.region.latitude,
             longitude: this.state.region.longitude,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
+            latitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.0005 : 0.0005,
+            longitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.0005 : 0.0005,
         }
+
+        this.setState({
+            region: {
+                latitude: this.state.region.latitude,
+                longitude: this.state.region.longitude,
+                latitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.15 : 0.15,
+                longitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.15 : 0.15,
+            }
+        })
 
         fetch(`https://maps.googleapis.com/maps/api/place/autocomplete/json?key=${key}&input=${place}&location=${region.latitude},${region.longitude}&radius=200`)
             .then((response) => response.json())
@@ -145,6 +140,24 @@ class Home extends Component {
             })
     }
 
+    getCurrentPosition() {
+        Geolocation.getCurrentPosition(
+            position => {
+                this.setState({
+                    region: {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        latitudeDelta: 0.05,
+                        longitudeDelta: 0.05
+                    }
+                })
+            },
+            error => {
+                console.log(error)
+            }
+        )
+    }
+
     onRequestDonor() {
         this.setState({
             selectedTab: 0,
@@ -157,7 +170,20 @@ class Home extends Component {
             selectedTab: -1,
             modalRequest: false
         })
-        this.props.navigation.navigate('Request', {lat: this.state.region.latitude, lng: this.state.region.longitude});
+        this.props.navigation.navigate('Request', { lat: this.state.region.latitude, lng: this.state.region.longitude, bloodGroup: this.state.bloodGroup, numberOfBottles: this.state.numberOfBottles });
+    }
+
+    renderShowLocationButton = () => {
+        return (
+            <TouchableOpacity
+                style={styles.myLocationButton}
+                onPress={() => {
+                    this.getCurrentPosition()
+                }}
+            >
+                <MaterialCommunityIcons name='crosshairs-gps' size={25} />
+            </TouchableOpacity>
+        )
     }
 
     render() {
@@ -173,6 +199,7 @@ class Home extends Component {
                     region={this.state.region}
                     zoomEnabled={!loading}
                     onRegionChange={this.onRegionChange}
+                    showsUserLocation
                 >
                     {(this.state.makePath) ?
                         <PolylineDirection
@@ -200,6 +227,7 @@ class Home extends Component {
                         )
                     }
                 </MapView>
+                {this.renderShowLocationButton()}
                 {loading &&
                     <View style={loadingStyle}>
                         <ActivityIndicator size={"large"} color={"#ff5d5b"} />
@@ -266,7 +294,7 @@ class Home extends Component {
                     <TouchableOpacity
                         style={buttonStyle}
                         disabled={loading}
-                        onPress={() => {this.setState({selectedTab: -1}); this.props.navigation.navigate('EmergencyContacts')}}
+                        onPress={() => { this.setState({ selectedTab: -1 }); this.props.navigation.navigate('ReceiverEmergencyContacts') }}
                     >
                         <SimpleLineIcon
                             name="call-out"
@@ -364,15 +392,17 @@ class Home extends Component {
                                     </Picker>
                                 </View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
-                                    <View style={{width: Dimensions.get('window').width * .3}}>
+                                    <View style={{ width: Dimensions.get('window').width * .3 }}>
 
-                                    </View>                                    
-                                    <TouchableOpacity style={styles.cancelButton} onPress={() => this.setState({modalRequest: false})}>
+                                    </View>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={() => this.setState({ modalRequest: false })}>
                                         <Text style={{ fontSize: 16, color: '#ff5d5b' }}>Cancel</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.doneButton} onPress={() => 
-                                        this.onRequest()                                    
-                                    }>
+                                    <TouchableOpacity style={styles.doneButton}
+                                        disabled={(this.state.numberOfBottles === 0) ? true : false}
+                                        onPress={() =>
+                                            this.onRequest()
+                                        }>
                                         <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Request</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -511,14 +541,27 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         paddingVertical: 5,
         paddingHorizontal: 15
-      },
-      skipButton: {
+    },
+    skipButton: {
         justifyContent: 'center',
         alignItems: 'center',
         height: 25,
         paddingVertical: 5,
         paddingHorizontal: 15
-      }
+    },
+    myLocationButton: {
+        backgroundColor: 'white',
+        opacity: 0.9,
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
+        elevation: 3,
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        justifyContent: 'center',
+        borderRadius: 5
+    }
 })
 
 export default connect(userDetailsAction.mapStateToProps, userDetailsAction.mapDispatchToProps)(Home);
