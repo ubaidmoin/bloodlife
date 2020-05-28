@@ -14,8 +14,8 @@ class Login extends Component {
         super(props);
         this.state = {
             opacity: new Animated.Value(0),
-            email: 'tabish.tashfeentt@gmail.com',
-            password: 'asdf1234',
+            email: '',
+            password: '',
             error: '',
             loading: false
         };
@@ -113,7 +113,7 @@ class Login extends Component {
                 });
         } else {
             auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-                .then((doc) => {
+                .then((doc) => {                    
                     if (doc.user.emailVerified) {
                         firestore().collection('Users').get().then(doc => {
                             doc.forEach((user) => {

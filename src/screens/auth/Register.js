@@ -13,14 +13,14 @@ export default class Register extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            firstName: 'Ubaid',
-            lastName: 'Ullah',
-            email: 'bloodlife@admin.org',
-            phoneNo: '1231231212',
-            address: 'asdasdsa',
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNo: '',
+            address: '',
             city: '',
-            password: 'asdf1234',
-            confirmPassword: 'asdf1234',
+            password: '',
+            confirmPassword: '',
             dob: new Date(),
             error: '',
             loading: false,

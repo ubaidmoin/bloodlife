@@ -13,7 +13,7 @@ export default class ForgotPassword extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: 'tanwer.ubaid@gmail.com',
+            email: '',
             error: '',
             loading: false
         }
