@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator, ImageBackground, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, KeyboardAvoidingView, ActivityIndicator, ImageBackground, Platform, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import TextInputMask from 'react-native-text-input-mask';
 import DatePicker from 'react-native-datepicker';
@@ -39,6 +39,7 @@ export default class Register extends Component {
                 })
                 return id = id + 1;
             });
+            console.log("BL-" + response)
         return "BL-" + response;
     }
 
@@ -73,12 +74,19 @@ export default class Register extends Component {
             auth().createUserWithEmailAndPassword(email, password)
                 .then(async (doc) => {
                     const id = await this.generateUserId();
+                    console.log(id)
                     const user = await this.addUser(id);
                     if (user) {
-                        doc.user.sendEmailVerification().then(() => alert('Verification link sent to your email.'));
+                        doc.user.sendEmailVerification().then(() => alert('Verification link sent to your email.'))
+                        .catch(err => console.log(err));
+                    } else {
+                        console.log(user);
                     }
-                })
-                .catch(() => {
+                    this.setState({
+                        loading: false,
+                    })
+                }).catch(err => {
+                    console.log(err)
                     this.setState({
                         loading: false,
                     })
@@ -105,6 +113,7 @@ export default class Register extends Component {
                 image: '',
                 blocked: false
             }).then((docRef) => {
+                console.log(docRef)
                 resolve(true);
                 this.setState({
                     loading: false,
@@ -118,6 +127,7 @@ export default class Register extends Component {
                 })
 
             }).catch((error) => {
+                console.log(error)
                 reject(false);
                 this.setState({
                     loading: false,
@@ -138,8 +148,9 @@ export default class Register extends Component {
 
     render() {
         const { container } = styles;
-        return (
-            <KeyboardAvoidingView style={container}>
+        return (            
+                <ScrollView>
+                    <KeyboardAvoidingView style={container}>
                 <ImageBackground source={require('../../assets/img/logo.jpeg')} style={{ width: 200, height: (Platform.OS === "ios") ? 180 : 150 }} />
                 <View style={{ flexDirection: 'row', }}>
                     <TextInput
@@ -330,7 +341,8 @@ export default class Register extends Component {
                         Already have an account?
                     </Text>
                 </TouchableOpacity>
-            </KeyboardAvoidingView>
+                </KeyboardAvoidingView>
+                </ScrollView>            
         );
     }
 }

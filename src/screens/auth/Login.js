@@ -67,13 +67,15 @@ class Login extends Component {
         }
     }
 
-    onButtonPress() {
+    onButtonPress() {        
         this.setState({
             loading: true
         })
         if (this.state.email.endsWith('.org')) {
+            console.log('here')
             auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                 .then((doc) => {
+                    console.log(doc)
                     firestore().collection('Users').get().then(doc => {
                         doc.forEach((user) => {
                             if (user.data().email === this.state.email && user.data().password === this.state.password && user.data().userType === 'admin') {
@@ -114,6 +116,7 @@ class Login extends Component {
         } else {
             auth().signInWithEmailAndPassword(this.state.email, this.state.password)
                 .then((doc) => {                    
+                    console.log(doc)
                     if (doc.user.emailVerified) {
                         firestore().collection('Users').get().then(doc => {
                             doc.forEach((user) => {

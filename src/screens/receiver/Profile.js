@@ -39,23 +39,15 @@ class Profile extends Component {
     }
 
     pickImage() {
-        ImagePicker.showImagePicker(options, (response) => {
-            // console.log('Response = ', response);
-
+        ImagePicker.showImagePicker(options, (response) => {            
             if (response.didCancel) {
-                console.log('User cancelled image picker');
+                console.log('Cancelled');
             } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
+                console.log('Error: ', response.error);
             } else {
-                //const source = { uri: response.uri };
-
-                // You can also display the image using data:
-                //let source = {  response.data };//already added this thing
-
                 this.setState({
-                    image: response.data
+                    image: response.data //base64 response
                 });
-                //console.warn(this.state.avatar)
             }
         });
     }
