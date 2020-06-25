@@ -14,7 +14,7 @@ class History extends Component {
         this.state = {
             history: [],
             loading: false,
-            userDetails: props.userDetails,            
+            userDetails: props.userDetails,
         };
     }
 
@@ -27,12 +27,12 @@ class History extends Component {
             let history = [];
             request.forEach(r => {
                 if (this.state.userDetails.userType === "receiver") {
-                    if (r.data().receiverId === this.state.userDetails.id) {                        
+                    if (r.data().receiverId === this.state.userDetails.id) {
                         let id = r.data().donorId;
-                        firestore().collection('Users').doc(id).get().then(donor => {                            
+                        firestore().collection('Users').doc(id).get().then(donor => {
                             history.push({
                                 id: r.id,
-                                name: donor.data().firstName + ' ' + donor.data().lastName,                                
+                                name: donor.data().firstName + ' ' + donor.data().lastName,
                                 image: donor.data().image,
                                 ratings: donor.data().ratings,
                                 bloodGroup: r.data().bloodGroup,
@@ -47,18 +47,18 @@ class History extends Component {
                         })
                     }
                 } else {
-                    if (r.data().donorId === this.state.userDetails.id) {                        
+                    if (r.data().donorId === this.state.userDetails.id) {
                         let id = r.data().receiverId;
-                        firestore().collection('Users').doc(id).get().then(donor => {                            
+                        firestore().collection('Users').doc(id).get().then(donor => {
                             history.push({
-                                id: r.id,                                
-                                name: donor.data().firstName + ' ' + donor.data().lastName,                                
+                                id: r.id,
+                                name: donor.data().firstName + ' ' + donor.data().lastName,
                                 image: donor.data().image,
-                                ratings: donor.data().ratings, 
+                                ratings: donor.data().ratings,
                                 bloodGroup: r.data().bloodGroup,
                                 address: donor.data().address,
-                                phoneNo: donor.data().phoneNo,    
-                                numberOfBottles: r.data().numberOfBottles                           
+                                phoneNo: donor.data().phoneNo,
+                                numberOfBottles: r.data().numberOfBottles
                             })
                             this.setState({
                                 history
@@ -87,33 +87,40 @@ class History extends Component {
         let data = [...this.state.history]
         let item = data[index]
         let id = await this.generateComplaintId();
-        this.setState({
-            loading: true
-        })
-        firestore().collection('Complaints').doc(id).set({
-            id: id,
-            receiverId: this.state.userDetails.id,
-            donorId: item.id,
-            donorName: item.name,            
-            date: item.date,
-            bloodGroup: item.type,
-            description: item.description,
-            numberOfBottles: item.numberOfBottles,
-            donorAddress: item.address,
-            receiverAddress: this.state.userDetails.address,
-            by: this.state.userDetails.userType
-
-        }).then((docRef) => {
+        if (!item.description) {
+            alert('Description could not be empty.')
+        } else {
             this.setState({
-                loading: false
+                loading: true
             })
-            alert('Complaint successfully submitted.')
-        }).catch((error) => {
-            this.setState({
-                loading: false
-            })
-            alert('An error occured.')
-        });
+            firestore().collection('Complaints').doc(id).set({
+                id: id,
+                receiverId: this.state.userDetails.id,
+                donorId: item.id,
+                donorName: item.name,
+                date: item.date,
+                bloodGroup: item.bloodGroup,
+                description: item.description,
+                numberOfBottles: item.numberOfBottles,
+                donorAddress: item.address,
+                receiverAddress: this.state.userDetails.address,
+                by: this.state.userDetails.userType
+    
+            }).then((docRef) => {
+                item.description = "";
+                data[index] = item;
+                this.setState({
+                    loading: false,
+                    history: data
+                })                
+                alert('Complaint successfully submitted.')
+            }).catch((error) => {
+                this.setState({
+                    loading: false
+                })
+                alert('An error occured.')
+            });
+        }
     }
 
     handleTextChange(index, value) {
@@ -146,13 +153,13 @@ class History extends Component {
                         { uri: 'data:image/jpeg;base64,' + item.image }} style={imageStyle} />
                     <View>
                         <View style={{ marginLeft: 5 }}>
-                        <Text style={title}>{item.name}</Text>
-                        <Text style={type}>Phone Number: {item.phoneNo}</Text>
-                        <Text style={type}>Date: {item.date}</Text>     
-                        <Text style={type}>Blood Group: {item.bloodGroup}</Text>
-                        <Text style={type}>Number of Bottles: {item.numberOfBottles}</Text>                                           
-                        <Text style={type}>Address: {item.address}</Text>
-                        {/* <Text style={title}>{item.date}</Text> */}
+                            <Text style={title}>{item.name}</Text>
+                            <Text style={type}>Phone Number: {item.phoneNo}</Text>
+                            <Text style={type}>Date: {item.date}</Text>
+                            <Text style={type}>Blood Group: {item.bloodGroup}</Text>
+                            <Text style={type}>Number of Bottles: {item.numberOfBottles}</Text>
+                            <Text style={type}>Address: {item.address}</Text>
+                            {/* <Text style={title}>{item.date}</Text> */}
                             {/* <View style={styles.ratings}>
                                 <Text style={styles.textStyle}>{item.ratings}</Text>
                                 <FontAwesomeIcon
@@ -163,7 +170,18 @@ class History extends Component {
                             </View> */}
                         </View>
                         {<TouchableOpacity
-                            style={buttonStyle}
+                            style={{
+                                backgroundColor: '#ff5d5b',
+                                height: 25,
+                                paddingHorizontal: 10,
+                                borderWidth: 1,
+                                borderColor: '#fea39e',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: 5,
+                                marginVertical: 5,
+                                width: Dimensions.get('window').width * .5
+                            }}
                             onPress={() => this.showDescription(index)}
                         >
                             <Text style={textStyle}>
@@ -258,7 +276,8 @@ const styles = StyleSheet.create({
         padding: 5
     },
     type: {
-        fontSize: 15
+        fontSize: 15,
+        width: Dimensions.get('window').width * .7
     },
     typeContainer: {
         justifyContent: 'flex-end',

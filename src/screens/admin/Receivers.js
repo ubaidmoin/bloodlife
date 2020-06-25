@@ -205,7 +205,7 @@ class Receivers extends Component {
                         onChangeText={filter => this.filterContacts(filter)}
                     />
                 </View>
-                <View style={{ marginVertical: 20 }}>
+                <View style={{ paddingVertical: 20, marginBottom: 50 }}>
                     {this.renderReceivers()}
                 </View>
             </View>

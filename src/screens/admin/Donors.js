@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, BackHandler, Dimensions } from 'react-native';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import { TextInput } from 'react-native-paper';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { AndroidBackHandler } from "react-navigation-backhandler";
 
 import ReceiversScreen from './Receivers';
 
@@ -23,6 +24,11 @@ class Donors extends Component {
             filter: ''
         };
     }
+
+    onBackButtonPressAndroid = () => {
+        BackHandler.exitApp();
+        return true;
+    };
 
     componentDidMount() {
         this.getDonors();
@@ -209,7 +215,7 @@ class Donors extends Component {
                                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Have Disease:</Text>
                                         <Text style={{ fontSize: 15 }}>{item.disease}</Text>
                                     </View>
-                                    <View style={{ paddingHorizontal: '30%', flexDirection: 'row' }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
                                         <TouchableOpacity
                                             style={blockButtonStyle}
                                             onPress={() => this.blockUser(index)}
@@ -244,6 +250,7 @@ class Donors extends Component {
     render() {
         const { search, blockButtonStyle, blockedTextStyle } = styles;
         return (
+            <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
             <View style={{ width: '100%', height: '100%', backgroundColor: '#EBEFF3' }}>
                 <View style={search}>
                     <TextInput
@@ -276,6 +283,7 @@ class Donors extends Component {
                     {this.renderDonors()}
                 </View>
             </View>
+            </AndroidBackHandler>
         );
     }
 }
@@ -368,7 +376,7 @@ const styles = StyleSheet.create({
     blockButtonStyle: {
         backgroundColor: '#ff5d5b',
         height: 25,
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,        
         borderWidth: 1,
         borderColor: '#fea39e',
         alignItems: 'center',

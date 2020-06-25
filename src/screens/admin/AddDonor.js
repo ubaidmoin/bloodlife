@@ -15,15 +15,15 @@ export default class AddDonor extends Component {
         super(props);
 
         this.state = {
-            firstName: 'Tabish',
-            lastName: 'Tashfeen',
-            email: 'tabish.tashfeentt@gmail.com',
-            phoneNo: '033254432345',
-            address: 'alksdjalksdj',
-            city: 'Rawalpindi',
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNo: '',
+            address: '',
+            city: '',
             dob: new Date(),
-            password: 'asdf1234',
-            weight: '60',
+            password: '',
+            weight: '',
             lastDonated: new Date(),
             image: '',
             modal: false,
@@ -196,8 +196,7 @@ export default class AddDonor extends Component {
                             selectionColor='#ff5d5b'
                             underlineColor='#ff5d5b'
                             value={firstName}
-                            onChangeText={firstName => this.setState({ firstName })}
-                            disabled={true}
+                            onChangeText={firstName => this.setState({ firstName })}                            
                         />
                         <TextInput
                             label='Last Name'
@@ -213,8 +212,7 @@ export default class AddDonor extends Component {
                             selectionColor='#ff5d5b'
                             underlineColor='#ff5d5b'
                             value={lastName}
-                            onChangeText={lastName => this.setState({ lastName })}
-                            disabled
+                            onChangeText={lastName => this.setState({ lastName })}                            
                         /></View>
                     <TextInput
                         label='Email'
@@ -226,8 +224,7 @@ export default class AddDonor extends Component {
                         selectionColor='#ff5d5b'
                         underlineColor='#ff5d5b'
                         value={email}
-                        onChangeText={email => this.setState({ email })}
-                        disabled
+                        onChangeText={email => this.setState({ email })}                        
                     />
                     <TextInput
                         label='Phone No.'

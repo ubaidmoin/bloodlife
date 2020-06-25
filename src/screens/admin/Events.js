@@ -67,22 +67,38 @@ class Event extends Component {
 
     addEvent = (id) => new Promise((resolve, reject) => {
         const { name, date, description, image } = this.state;
-        firestore().collection('Events').doc(id).set({
-            id: id,
-            name: name,
-            date: date,
-            description: description,
-            image: image
-        }).then((docRef) => {
-            resolve(true);
-            alert('Event successfully added.')
-        }).catch((error) => {
-            reject(false);
+        if (name === '') {
+            alert('Name field could not be empty')
+        } else if (description === '') {
+            alert('Description field could not be empty')            
+        } else if (image === '') {
+            alert('Please select image')            
+        } else {
             this.setState({
-                loading: false
+                loading: true
             })
-            alert('An error occured.')
-        });
+            firestore().collection('Events').doc(id).set({
+                id: id,
+                name: name,
+                date: date.toDateString(),
+                description: description,
+                image: image
+            }).then((docRef) => {
+                resolve(true);
+                alert('Event successfully added.')
+                this.setState({
+                    loading: false,
+                    isModalVisible: false
+                })
+            }).catch((error) => {
+                reject(false);
+                this.setState({
+                    loading: false,
+                    isModalVisible: false
+                })
+                alert('An error occured.')
+            });
+        }        
     })
 
     addNewEvent() {
@@ -91,16 +107,9 @@ class Event extends Component {
         })
     }
 
-    async onAddEvent() {
-        this.setState({
-            loading: true
-        })
+    async onAddEvent() {        
         let id = await this.generateEventId();
-        this.addEvent(id);
-        this.setState({
-            loading: false,
-            isModalVisible: false
-        })
+        this.addEvent(id);        
     }
 
     pickImage() {
@@ -382,10 +391,12 @@ const styles = StyleSheet.create({
     },
     eventName: {
         fontWeight: 'bold',
-        fontSize: 25
+        fontSize: 25,
+        width: Dimensions.get('window').width * .5
     },
     eventDate: {
-        fontSize: 15
+        fontSize: 15,
+        width: Dimensions.get('window').width * .5
     },
     buttonStyle: {
         backgroundColor: '#ff5d5b',

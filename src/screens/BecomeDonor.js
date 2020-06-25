@@ -52,16 +52,26 @@ class BecomeDonor extends Component {
         this.setState({
             loading: true
         })
-        const today = moment(new Date());
-        const dob =  moment(this.state.userDetails.dob, 'DD-MM-YYYY').toDate();
-        const years = today.diff(dob, 'years');
+        const today = moment(new Date(), 'DD-MM-YYYY');        
+        const dob =  moment(this.state.userDetails.dob);        
+        const years = today.diff(dob, 'years');   
+        console.log(years)     
         if (this.state.weight === '') {
             alert('Weight field should not be empty.');
+            this.setState({
+                loading: false
+            })
         }
-        else if (!years > 18) {
+        else if (years < 18) {
             alert('You are underage to become a donor.');
+            this.setState({
+                loading: false
+            })
         } else if (this.state.weight < '55') {
             alert('You are under-weight to become a donor.');
+            this.setState({
+                loading: false
+            })
         } else {
             firestore().collection('Users').doc(this.state.userDetails.id)
             .get()
@@ -71,7 +81,7 @@ class BecomeDonor extends Component {
                     address: this.state.address,  
                     city: this.state.city,                    
                     weight: this.state.weight,
-                    lastDonated: this.state.lastDonated,
+                    lastDonated: this.state.lastDonated.toDateString(),
                     disease: this.state.disease,
                     bloodGroup: this.state.bloodGroup,
                     userType: 'donor'

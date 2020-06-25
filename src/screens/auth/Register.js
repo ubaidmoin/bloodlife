@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, KeyboardAvoidingView, ActivityIndicator, ImageBackground, Platform, StyleSheet } from 'react-native';
+import { Keyboard, View, Text, TouchableOpacity, ScrollView, KeyboardAvoidingView, ActivityIndicator, ImageBackground, Platform, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import TextInputMask from 'react-native-text-input-mask';
 import DatePicker from 'react-native-datepicker';
@@ -47,6 +47,7 @@ export default class Register extends Component {
     }
 
     async onButtonPress() {
+        Keyboard.dismiss();
         const { firstName, lastName, email, phoneNo, password, address, city } = this.state;
         if (firstName === '') {
             alert('First Name field should not be empty.')
@@ -151,7 +152,7 @@ export default class Register extends Component {
         return (            
                 <ScrollView>
                     <KeyboardAvoidingView style={container}>
-                <ImageBackground source={require('../../assets/img/logo.jpeg')} style={{ width: 200, height: (Platform.OS === "ios") ? 180 : 150 }} />
+                <ImageBackground source={require('../../assets/img/logo.jpeg')} style={{ width: 200, height: (Platform.OS === "ios") ? 180 : 170 }} />
                 <View style={{ flexDirection: 'row', }}>
                     <TextInput
                         label='First Name'

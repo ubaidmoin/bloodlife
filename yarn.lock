@@ -6009,6 +6009,11 @@ react-native@0.62.2:
     use-subscription "^1.0.0"
     whatwg-fetch "^3.0.0"
 
+react-navigation-backhandler@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-backhandler/-/react-navigation-backhandler-2.0.0.tgz#cad1ec997ddfe935788c841c6acc3bf920c5a11f"
+  integrity sha512-GoHeYPToJIoaw5LXigK0y9Ymvc1UlZ7Q49NGX82OTMrHSmxphT++IomVKpsk3Wk0z1dYUSu4dceJcyq6Xcli8A==
+
 react-navigation@^4.3.7:
   version "4.3.7"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.3.7.tgz#33809fdfd7922c503d454c6367fae45dd67cb08a"

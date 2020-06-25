@@ -17,6 +17,8 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import UIStepper from 'react-native-ui-stepper';
 import { Picker } from '@react-native-community/picker';
 import { moment } from 'moment';
+import { AndroidBackHandler } from "react-navigation-backhandler";
+
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 
 class DriverHome extends Component {
@@ -29,20 +31,15 @@ class DriverHome extends Component {
                 { label: "Yes", value: "1" }
             ],
             region: {
-                latitude: 33.5651,
-                longitude: 73.0169,
+                latitude: 33.7875080,
+                longitude: 72.7226303,
                 latitudeDelta: 0.05,
                 longitudeDelta: 0.05
             },
             selectedOption: false,
             receiver: {
-                id: 1,
-                firstName: 'Awais',
-                lastName: 'Khan',
-                ratings: 4.5,
-                phoneNo: '0234234234',
-                lat: 33.5969,
-                lng: 73.0528,
+                lat: 0,
+                lng: 0
             },
             accepted: false,
             modal: false,
@@ -76,6 +73,11 @@ class DriverHome extends Component {
         };
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     }
+
+    onBackButtonPressAndroid = () => {
+        BackHandler.exitApp();
+        return true;
+    };
 
     async componentDidMount() {
         try {
@@ -182,7 +184,7 @@ class DriverHome extends Component {
                                 address: doc.data().address,
                                 city: doc.data().city,
                             },
-                            modal: true
+                            modalDonor: true
                         })
                     })
                 } else if (doc.data().status === "finished") {
@@ -199,12 +201,12 @@ class DriverHome extends Component {
         // const lastDonated =  moment(this.state.userDetails.lastDonated, 'DD-MM-YYYY').toDate();
         // const months = today.diff(lastDonated, 'months');
         // if (months >= 3) {
-            if (!this.state.selectedOption) {
-                this.changeAvailabilityStatus(true, this.state.region.latitude, this.state.region.longitude);
-            } else {
-                this.changeAvailabilityStatus(false, 0, 0);
-            }
-            this.setState({ selectedOption: !this.state.selectedOption });
+        if (!this.state.selectedOption) {
+            this.changeAvailabilityStatus(true, this.state.region.latitude, this.state.region.longitude);
+        } else {
+            this.changeAvailabilityStatus(false, 0, 0);
+        }
+        this.setState({ selectedOption: !this.state.selectedOption });
         // } else {
         //     alert('It\'s been less than 3 months you last donated blood.');
         // }
@@ -256,7 +258,7 @@ class DriverHome extends Component {
                 firestore().collection('Users').doc(querySnapshot.data().id).update({
                     ratings: rating
                 }).then(() => {
-                    this.setState({ modal: false, submitRatings: false, selectedOption: true });
+                    this.setState({ modal: false, submitRatings: false, selectedOption: true, modalDonor: false });
                     this.changeAvailabilityStatus(true, this.state.region.latitude, this.state.region.longitude);
                 })
             })
@@ -331,319 +333,340 @@ class DriverHome extends Component {
         this.props.navigation.navigate('DonorRequest', { lat: this.state.region.latitude, lng: this.state.region.longitude, bloodGroup: this.state.bloodGroup, numberOfBottles: this.state.numberOfBottles });
     }
 
+    renderShowLocationButton = () => {
+        return (
+            <TouchableOpacity
+                style={styles.myLocationButton}
+                onPress={() => {
+                    this.getCurrentPosition()
+                }}
+            >
+                <MaterialCommunityIcons name='crosshairs-gps' size={25} />
+            </TouchableOpacity>
+        )
+    }
+
+    // onRegionChange(region) {
+    //     this.setState({ region });
+    // }
+
     render() {
         const { availabilityTextStyle, modalRequestStyle, modalViewStyle, modalTextStyle, container, availableButtonStyle, textStyle, modalStyle, ratings, imageStyle, nameStyle, bottomButtons, selectedTextStyle, firstButtonStyle, buttonStyle } = styles;
-        const { bloodGroup, bloodGroupOptions, numberOfBottles, receiver, selectedOption, region, accepted, modal, submitRatings, selectedTab, modalDonor, loading, markers, modalRequest, hospitalAddress, hospitalName, hospitalPhone, selectedHospital } = this.state;
+        const { bloodGroup, bloodGroupOptions, numberOfBottles, receiver, selectedOption, region, accepted, modal, submitRatings, selectedTab, modalDonor, loading, markers, modalRequest, hospitalAddress, hospitalName, hospitalPhone, userDetails } = this.state;
         const { lat, lng } = this.state.receiver;
         const { latitude, longitude } = this.state.region;
         const { latitudeD, longitudeD } = this.state.destination;
         return (
-            <View style={container}>
-                <StatusBar backgroundColor="blue" barStyle="light-content" />
-                <MapView
-                    style={{
-                        height: Dimensions.get('window').height,
-                        width: Dimensions.get('window').width
-                    }}
-                    showsUserLocation
-                    region={region}
-                    onRegionChange={this.onRegionChange}
-                >
-                    {accepted && <Marker
-                        coordinate={{
-                            "latitude": lat,
-                            "longitude": lng
+            <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
+                <View style={container}>
+                    <StatusBar backgroundColor="blue" barStyle="light-content" />
+                    <MapView
+                        style={{
+                            height: Dimensions.get('window').height,
+                            width: Dimensions.get('window').width
                         }}
-                        title={"Receiver's Location"}
-                        draggable />}
-                    {accepted &&
-                        <PolylineDirection
-                            origin={{ latitude: latitude, longitude: longitude }}
-                            destination={{ latitude: lat, longitude: lng }}
-                            apiKey='AIzaSyCLQcrBEdrKgoyeip5eiPimv0ukHuOkOXk'
-                            strokeWidth={4}
-                            strokeColor="#ff5d5b"
-                        />}
-                    {(this.state.makePath) ?
-                        <PolylineDirection
-                            origin={{ latitude: latitude, longitude: longitude }}
-                            destination={{ latitude: latitudeD, longitude: longitudeD }}
-                            apiKey='AIzaSyCLQcrBEdrKgoyeip5eiPimv0ukHuOkOXk'
-                            strokeWidth={4}
-                            strokeColor="#ff5d5b"
-                        /> : null}
-                    {
-                        markers.map((marker, index) =>
-                            <Marker key={index} coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-                                onPress={() => this.setState({
-                                    makePath: (this.state.selectedHospital === index) ? true : false,
-                                    modal: true,
-                                    destination: {
-                                        latitudeD: marker.latitude, longitudeD: marker.longitude
-                                    },
-                                    hospitalName: marker.hospitalName,
-                                    hospitalAddress: marker.hospitalAddress,
-                                    hospitalPhone: marker.hospitalPhone,
-                                    selectedHospital: index,
-                                })}
+                        showsUserLocation
+                        region={region}
+                        onRegionChange={this.onRegionChange}
+                        showsMyLocationButton={false}
+                    >
+                        {accepted && <Marker
+                            coordinate={{
+                                "latitude": lat,
+                                "longitude": lng
+                            }}
+                            title={"Receiver's Location"}
+                            draggable />}
+                        {accepted &&
+                            <PolylineDirection
+                                origin={{ latitude: latitude, longitude: longitude }}
+                                destination={{ latitude: lat, longitude: lng }}
+                                apiKey='AIzaSyCLQcrBEdrKgoyeip5eiPimv0ukHuOkOXk'
+                                strokeWidth={4}
+                                strokeColor="#ff5d5b"
+                            />}
+                        {(this.state.makePath) ?
+                            <PolylineDirection
+                                origin={{ latitude: latitude, longitude: longitude }}
+                                destination={{ latitude: latitudeD, longitude: longitudeD }}
+                                apiKey='AIzaSyCLQcrBEdrKgoyeip5eiPimv0ukHuOkOXk'
+                                strokeWidth={4}
+                                strokeColor="#ff5d5b"
+                            /> : null}
+                        {
+                            markers.map((marker, index) =>
+                                <Marker key={index} coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
+                                    onPress={() => this.setState({
+                                        makePath: (this.state.selectedHospital === index) ? true : false,
+                                        modal: true,
+                                        destination: {
+                                            latitudeD: marker.latitude, longitudeD: marker.longitude
+                                        },
+                                        hospitalName: marker.hospitalName,
+                                        hospitalAddress: marker.hospitalAddress,
+                                        hospitalPhone: marker.hospitalPhone,
+                                        selectedHospital: index,
+                                    })}
+                                />
+                            )
+                        }
+                    </MapView>
+                    <View style={availableButtonStyle}>
+                        <Text style={availabilityTextStyle}>Available</Text>
+                        <Switch
+                            ios_backgroundColor='white'
+                            thumbColor='#ff5d5b'
+                            trackColor={{ true: '#ff5d5b', false: 'grey' }}
+                            value={selectedOption}
+                            onValueChange={() => this.onAvailableChange()}
+                        />
+                    </View>
+                    {this.renderShowLocationButton()}
+                    <View style={bottomButtons}>
+                        <TouchableOpacity
+                            style={firstButtonStyle}
+                            disabled={loading}
+                            onPress={() => this.onRequestDonor()}
+                        >
+                            <EntypoIcon
+                                name="drop"
+                                size={25}
+                                color={(selectedTab !== 0) ? "#ff5d5b" : "red"}
                             />
-                        )
-                    }
-                </MapView>
-                <View style={availableButtonStyle}>
-                    <Text style={availabilityTextStyle}>Available</Text>
-                    <Switch
-                        ios_backgroundColor='white'
-                        thumbColor='#ff5d5b'
-                        trackColor={{ true: '#ff5d5b', false: 'grey' }}
-                        value={selectedOption}
-                        onValueChange={() => this.onAvailableChange()}
-                    />
-                </View>
-                <View style={bottomButtons}>
-                    <TouchableOpacity
-                        style={firstButtonStyle}
-                        disabled={loading}
-                        onPress={() => this.onRequestDonor()}
-                    >
-                        <EntypoIcon
-                            name="drop"
-                            size={25}
-                            color={(selectedTab !== 0) ? "#ff5d5b" : "red"}
-                        />
-                        <Text style={(selectedTab === 0) ? selectedTextStyle : textStyle}>
-                            REQUEST BLOOD
+                            <Text style={(selectedTab === 0) ? selectedTextStyle : textStyle}>
+                                REQUEST BLOOD
                         </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={buttonStyle}
-                        disabled={loading}
-                        onPress={() => this.onFind('pharmacy')}
-                    >
-                        <MaterialIcon
-                            name="local-pharmacy"
-                            size={25}
-                            color={(selectedTab !== 1) ? "#ff5d5b" : "red"}
-                        />
-                        <Text style={(selectedTab === 1) ? selectedTextStyle : textStyle}>
-                            FIND PHARMACY
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={buttonStyle}
+                            disabled={loading}
+                            onPress={() => this.onFind('pharmacy')}
+                        >
+                            <MaterialIcon
+                                name="local-pharmacy"
+                                size={25}
+                                color={(selectedTab !== 1) ? "#ff5d5b" : "red"}
+                            />
+                            <Text style={(selectedTab === 1) ? selectedTextStyle : textStyle}>
+                                FIND PHARMACY
                         </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={buttonStyle}
-                        disabled={loading}
-                        onPress={() => this.onFind('hospitals')}
-                    >
-                        <FontAwesomeIcon
-                            name="hospital"
-                            size={25}
-                            color={(selectedTab !== 2) ? "#ff5d5b" : "red"}
-                        />
-                        <Text style={(selectedTab === 2) ? selectedTextStyle : textStyle}>
-                            FIND HOSPITAL
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={buttonStyle}
+                            disabled={loading}
+                            onPress={() => this.onFind('hospital')}
+                        >
+                            <FontAwesomeIcon
+                                name="hospital"
+                                size={25}
+                                color={(selectedTab !== 2) ? "#ff5d5b" : "red"}
+                            />
+                            <Text style={(selectedTab === 2) ? selectedTextStyle : textStyle}>
+                                FIND HOSPITAL
                         </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={buttonStyle}
-                        disabled={loading}
-                        onPress={() => this.onFind('blood bank')}
-                    >
-                        <MaterialCommunityIcons
-                            name="blood-bag"
-                            size={25}
-                            color={(selectedTab !== 3) ? "#ff5d5b" : "red"}
-                        />
-                        <Text style={(selectedTab === 3) ? selectedTextStyle : textStyle}>
-                            FIND BLOODBANK
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={buttonStyle}
+                            disabled={loading}
+                            onPress={() => this.onFind('blood bank')}
+                        >
+                            <MaterialCommunityIcons
+                                name="blood-bag"
+                                size={25}
+                                color={(selectedTab !== 3) ? "#ff5d5b" : "red"}
+                            />
+                            <Text style={(selectedTab === 3) ? selectedTextStyle : textStyle}>
+                                FIND BLOODBANK
                         </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={buttonStyle}
-                        disabled={loading}
-                        onPress={() => { this.setState({ selectedTab: -1 }); this.props.navigation.navigate('DonorEmergencyContacts') }}
-                    >
-                        <SimpleLineIcon
-                            name="call-out"
-                            size={25}
-                            color="#ff5d5b"
-                        />
-                        <Text style={textStyle}>
-                            EMERGENCY
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={buttonStyle}
+                            disabled={loading}
+                            onPress={() => { this.setState({ selectedTab: -1 }); this.props.navigation.navigate('DonorEmergencyContacts') }}
+                        >
+                            <SimpleLineIcon
+                                name="call-out"
+                                size={25}
+                                color="#ff5d5b"
+                            />
+                            <Text style={textStyle}>
+                                EMERGENCY
                         </Text>
-                    </TouchableOpacity>
-                </View>
-                <Modal animationType="fade" isVisible={modal} onRequestClose={() => this.setState({ modal: false })}
-                    animationType="slide"
-                    propagateSwipe
-                    style={modalStyle}
-                    hasBackdrop={false}
-                    coverScreen={false}
-                >
-                    <View >
-                        <View style={{ padding: 5 }}>
-                            <View style={{ flexDirection: "row", paddingLeft: 10 }}>
-                                <Image source={require('../../assets/img/logo.jpeg')} style={{
-                                    width: 40, height: 40, backgroundColor: 'lightgrey', borderRadius: 20
-                                }} />
-                                <View>
-                                    <Text style={{ color: '#ff5d5b', fontWeight: 'bold', fontSize: 14, marginLeft: 20 }}>{hospitalName}</Text>
-                                    <Text style={{ color: '#ff5d5b', fontSize: 14, marginLeft: 20 }}>{hospitalPhone}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Modal animationType="fade" isVisible={modal} onRequestClose={() => this.setState({ modal: false })}
+                        animationType="slide"
+                        propagateSwipe
+                        style={modalStyle}
+                        hasBackdrop={false}
+                        coverScreen={false}
+                    >
+                        <View >
+                            <View style={{ padding: 5 }}>
+                                <View style={{ flexDirection: "row", paddingLeft: 10 }}>
+                                    <Image source={require('../../assets/img/logo.jpeg')} style={{
+                                        width: 40, height: 40, backgroundColor: 'lightgrey', borderRadius: 20
+                                    }} />
+                                    <View>
+                                        <Text style={{ color: '#ff5d5b', fontWeight: 'bold', fontSize: 14, marginLeft: 20 }}>{hospitalName}</Text>
+                                        <Text style={{ color: '#ff5d5b', fontSize: 14, marginLeft: 20 }}>{hospitalPhone}</Text>
+                                    </View>
+                                </View>
+                                <View style={{ paddingLeft: 60 }}>
+                                    <Text style={{ color: '#ff5d5b', fontSize: 14, marginLeft: 20 }}>{hospitalAddress}</Text>
                                 </View>
                             </View>
-                            <View style={{ paddingLeft: 60 }}>
-                                <Text style={{ color: '#ff5d5b', fontSize: 14, marginLeft: 20 }}>{hospitalAddress}</Text>
+                            <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: '100%' }}>
+                                <Button
+                                    icon="directions"
+                                    mode="contained"
+                                    disabled={this.state.makePath}
+                                    theme={buttonTheme}
+                                    onPress={() => this.setState({ makePath: true, checkAlert: true })}>
+                                    Show Route
+                                </Button>
+                                <Button
+                                    icon="close-circle"
+                                    mode="contained"
+                                    theme={buttonTheme}
+                                    onPress={() => this.setState({ modal: false, selectedHospital: null, makePath: false })}>
+                                    Cancel
+                                </Button>
                             </View>
                         </View>
-                        <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: '100%' }}>
-                            <Button
-                                icon="directions"
-                                mode="contained"
-                                disabled={this.state.makePath}
-                                theme={buttonTheme}
-                                onPress={() => this.setState({ makePath: true, checkAlert: true })}>
-                                Show Route
-                                </Button>
-                            <Button
-                                icon="close-circle"
-                                mode="contained"
-                                theme={buttonTheme}
-                                onPress={() => this.setState({ modal: false, selectedHospital: null, makePath: false })}>
-                                Cancel
-                                </Button>
-                        </View>
-                    </View>
-                </Modal>
-                <Modal animationType="fade" isVisible={modalDonor} onRequestClose={() => this.setState({ modal: false })}
-                    animationType="slide"
-                    propagateSwipe
-                    style={modalStyle}
-                    hasBackdrop={false}
-                    coverScreen={false}
-                >
-                    <View>
-                        <View style={{ padding: 10 }}>
-                            {(!submitRatings) ? <View style={{ flexDirection: "row", paddingLeft: 10 }}>
-                                <Image source={require('../../assets/img/user.jpg')} style={imageStyle} />
-                                <View style={{ marginLeft: 20, paddingTop: 10 }}>
-                                    <Text style={nameStyle}>{receiver.firstName + ' ' + receiver.lastName}</Text>
-                                    <View style={ratings}>
-                                        <Text style={textStyle}>{receiver.ratings}</Text>
-                                        <FontAwesomeIcon
-                                            name="star"
-                                            size={20}
-                                            color={"#ff5d5b"}
+                    </Modal>
+                    {receiver && <Modal animationType="fade" isVisible={modalDonor} onRequestClose={() => this.setState({ modal: false })}
+                        animationType="slide"
+                        propagateSwipe
+                        style={modalStyle}
+                        hasBackdrop={false}
+                        coverScreen={false}
+                    >
+                        <View>
+                            <View style={{ padding: 10 }}>
+                                {(!submitRatings) ? <View style={{ flexDirection: "row", paddingLeft: 10 }}>
+                                    <Image source={(userDetails.image !== "") ? { uri: 'data:image/jpeg;base64,' + receiver.image } : require('../../assets/img/user.jpg')} style={imageStyle} />
+                                    <View style={{ marginLeft: 20, paddingTop: 10 }}>
+                                        <Text style={nameStyle}>{receiver.firstName + ' ' + receiver.lastName}</Text>
+                                        <View style={ratings}>
+                                            <Text style={nameStyle}>{receiver.ratings}</Text>
+                                            <FontAwesomeIcon
+                                                name="star"
+                                                size={20}
+                                                color={"#ff5d5b"}
+                                            />
+                                        </View>
+                                        <Text style={{ color: '#ff5d5b', fontSize: 14 }}>{receiver.phoneNo}</Text>
+                                        <Text style={{ color: '#ff5d5b', fontSize: 14 }}>{receiver.address}</Text>
+                                        <Text style={{ color: '#ff5d5b', fontSize: 14 }}>{receiver.city}</Text>
+                                        <Text style={{ color: '#ff5d5b', fontSize: 14 }}>Blood Group: {receiver.bloodGroup}</Text>
+                                        <Text style={{ color: '#ff5d5b', fontSize: 14 }}>Number of Bottles: {receiver.numberOfBottles}</Text>
+                                    </View>
+                                </View> :
+                                    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Submit Ratings</Text>
+                                        <StarRating
+                                            maxStars={5}
+                                            rating={this.state.ratings}
+                                            starSize={50}
+                                            emptyStarColor="grey"
+                                            containerStyle={{ marginLeft: -160, width: 50 }}
+                                            starStyle={{ flexDirection: 'row', justifyContent: 'flex-start' }}
+                                            selectedStar={(rating) => this.setState({ ratings: rating })}
                                         />
                                     </View>
-                                    <Text style={{ color: '#ff5d5b', fontSize: 14 }}>{receiver.phoneNo}</Text>
-                                    <Text style={{ color: '#ff5d5b', fontSize: 14 }}>{receiver.address}</Text>
-                                    <Text style={{ color: '#ff5d5b', fontSize: 14 }}>{receiver.city}</Text>
-                                    <Text style={{ color: '#ff5d5b', fontSize: 14 }}>Blood Group: {receiver.bloodGroup}</Text>
-                                    <Text style={{ color: '#ff5d5b', fontSize: 14 }}>Number of Bottles: {receiver.numberOfBottles}</Text>
-                                </View>
+                                }
+                            </View>
+                            {(!submitRatings) ? <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: '100%' }}>
+                                <Button
+                                    icon={(!accepted) ? "check-underline" : "phone"}
+                                    mode="contained"
+                                    theme={buttonTheme}
+                                    onPress={() => (!accepted) ? this.onAccept() : Communications.phonecall(receiver.phoneNo, true)}
+                                >
+                                    {(accepted) ? 'Call' : 'Accept'}
+                                </Button>
+                                {!accepted && <Button
+                                    icon="close-circle"
+                                    mode="contained"
+                                    theme={buttonTheme}
+                                    onPress={() => this.onReject()}>
+                                    Reject
+                            </Button>}
                             </View> :
-                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Submit Ratings</Text>
-                                    <StarRating
-                                        maxStars={5}
-                                        rating={this.state.ratings}
-                                        starSize={50}
-                                        emptyStarColor="grey"
-                                        containerStyle={{ marginLeft: -160, width: 50 }}
-                                        starStyle={{ flexDirection: 'row', justifyContent: 'flex-start' }}
-                                        selectedStar={(rating) => this.setState({ ratings: rating })}
-                                    />
-                                </View>
+                                <Button
+                                    icon={"check-underline"}
+                                    mode="contained"
+                                    theme={buttonTheme}
+                                    onPress={() => this.submitRatings()}
+                                >
+                                    {'Submit'}
+                                </Button>
                             }
                         </View>
-                        {(!submitRatings) ? <View style={{ flexDirection: "row", justifyContent: "space-evenly", width: '100%' }}>
-                            <Button
-                                icon={(!accepted) ? "check-underline" : "phone"}
-                                mode="contained"
-                                theme={buttonTheme}
-                                onPress={() => (!accepted) ? this.onAccept() : Communications.phonecall(receiver.phoneNo, true)}
-                            >
-                                {(accepted) ? 'Call' : 'Accept'}
-                            </Button>
-                            {!accepted && <Button
-                                icon="close-circle"
-                                mode="contained"
-                                theme={buttonTheme}
-                                onPress={() => this.onReject()}>
-                                Reject
-                            </Button>}
-                        </View> :
-                            <Button
-                                icon={"check-underline"}
-                                mode="contained"
-                                theme={buttonTheme}
-                                onPress={() => this.submitRatings()}
-                            >
-                                {'Submit'}
-                            </Button>
-                        }
-                    </View>
-                </Modal>
-                <Modal animationType="fade" isVisible={modalRequest} onRequestClose={() => this.setState({ modalRequest: false })}
-                    animationType="slide"
-                    propagateSwipe
-                    style={modalRequestStyle}
-                >
-                    <View >
-                        <View style={{ padding: 5 }}>
-                            <View style={modalViewStyle}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '93%' }}>
-                                    <Text style={modalTextStyle}>
-                                        Number of bottles
+                    </Modal>}
+                    <Modal animationType="fade" isVisible={modalRequest} onRequestClose={() => this.setState({ modalRequest: false })}
+                        animationType="slide"
+                        propagateSwipe
+                        style={modalRequestStyle}
+                    >
+                        <View >
+                            <View style={{ padding: 5 }}>
+                                <View style={modalViewStyle}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '93%' }}>
+                                        <Text style={modalTextStyle}>
+                                            Number of bottles
                                     </Text>
-                                    <UIStepper
-                                        value={numberOfBottles}
-                                        displayValue={true}
-                                        onValueChange={(value) => this.setState({ numberOfBottles: value })}
-                                        tintColor='#ff5d5b'
-                                        borderColor='#ff5d5b'
-                                        textColor='#ff5d5b'
-                                        width={70}
-                                        height={25}
-                                        minValue={1}
-                                    />
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '93%' }}>
-                                    <Text style={modalTextStyle}>
-                                        Blood Group
-                            </Text>
-                                    <Picker
-                                        selectedValue={bloodGroup}
-                                        style={{ width: '70%' }}
-                                        onValueChange={(itemValue, itemIndex) =>
-                                            this.setState({ bloodGroup: itemValue })
-                                        }>
-                                        {
-                                            bloodGroupOptions.map((item, index) =>
-                                                <Picker.Item key={index} label={item.label} value={item.value} />
-                                            )
-                                        }
-                                    </Picker>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
-                                    <View style={{ width: Dimensions.get('window').width * .3 }}>
-
+                                        <UIStepper
+                                            value={numberOfBottles}
+                                            displayValue={true}
+                                            onValueChange={(value) => this.setState({ numberOfBottles: value })}
+                                            tintColor='#ff5d5b'
+                                            borderColor='#ff5d5b'
+                                            textColor='#ff5d5b'
+                                            width={70}
+                                            height={25}
+                                            minValue={1}
+                                        />
                                     </View>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={() => this.setState({ modalRequest: false })}>
-                                        <Text style={{ fontSize: 16, color: '#ff5d5b' }}>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.doneButton}
-                                        disabled={(this.state.numberOfBottles === 0) ? true : false}
-                                        onPress={() =>
-                                            this.onRequest()
-                                        }>
-                                        <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Request</Text>
-                                    </TouchableOpacity>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '93%' }}>
+                                        <Text style={modalTextStyle}>
+                                            Blood Group
+                            </Text>
+                                        <Picker
+                                            selectedValue={bloodGroup}
+                                            style={{ width: '70%' }}
+                                            onValueChange={(itemValue, itemIndex) =>
+                                                this.setState({ bloodGroup: itemValue })
+                                            }>
+                                            {
+                                                bloodGroupOptions.map((item, index) =>
+                                                    <Picker.Item key={index} label={item.label} value={item.value} />
+                                                )
+                                            }
+                                        </Picker>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%' }}>
+                                        <View style={{ width: Dimensions.get('window').width * .3 }}>
+
+                                        </View>
+                                        <TouchableOpacity style={styles.cancelButton} onPress={() => this.setState({ modalRequest: false })}>
+                                            <Text style={{ fontSize: 16, color: '#ff5d5b' }}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.doneButton}
+                                            disabled={(this.state.numberOfBottles === 0) ? true : false}
+                                            onPress={() =>
+                                                this.onRequest()
+                                            }>
+                                            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Request</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                         </View>
-                    </View>
-                </Modal>
-            </View>
+                    </Modal>
+                </View>
+            </AndroidBackHandler>
         );
     }
 }
@@ -711,7 +734,7 @@ const styles = StyleSheet.create({
         bottom: Dimensions.get('screen').height * .01,
         left: Dimensions.get('screen').width * .0125,
         backgroundColor: 'white',
-        height: 185,
+        height: 215,
         borderRadius: 10,
         shadowColor: 'black',
         shadowOffset: {
@@ -797,6 +820,19 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         paddingVertical: 5,
         paddingHorizontal: 15
+    },
+    myLocationButton: {
+        backgroundColor: 'white',
+        opacity: 0.9,
+        position: 'absolute',
+        top: 60,
+        right: 10,
+        padding: 10,
+        elevation: 3,
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        justifyContent: 'center',
+        borderRadius: 5
     }
 })
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator, ImageBackground, Platform } from 'react-native';
+import { Keyboard, View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, ActivityIndicator, ImageBackground, Platform } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import TextInputMask from 'react-native-text-input-mask';
 import DatePicker from 'react-native-datepicker';
@@ -24,6 +24,7 @@ export default class ForgotPassword extends Component {
     }
 
     async onButtonPress() {
+        Keyboard.dismiss();
         const { email } = this.state;
         if (email === '') {
             alert('Email field should not be empty.')

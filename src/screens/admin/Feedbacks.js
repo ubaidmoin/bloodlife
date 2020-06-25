@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     textStyle: {
         fontSize: 15,
         fontWeight: 'bold',
-        width: '95%'
+        width: Dimensions.get('screen').width * .6
     }
 });
 

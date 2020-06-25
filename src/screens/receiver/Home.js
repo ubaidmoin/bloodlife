@@ -13,6 +13,7 @@ import PolylineDirection from '@react-native-maps/polyline-direction';
 import Modal from 'react-native-modal';
 import { Picker } from '@react-native-community/picker';
 import UIStepper from 'react-native-ui-stepper';
+import { AndroidBackHandler } from "react-navigation-backhandler";
 
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 
@@ -22,8 +23,8 @@ class Home extends Component {
         super(props);
         this.state = {
             region: {
-                latitude: 33.5466,
-                longitude: 73.0545,
+                latitude: 0,
+                longitude: 0,
                 latitudeDelta: 0.05,
                 longitudeDelta: 0.05,
             },
@@ -54,6 +55,11 @@ class Home extends Component {
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     }
 
+    onBackButtonPressAndroid = () => {
+        BackHandler.exitApp();
+        return true;
+    };
+
     async componentDidMount() {
         // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
         try {
@@ -82,15 +88,15 @@ class Home extends Component {
         // BackHandler.exitApp();
     }
 
-    onRegionChange(region) {
-        region => this.setState({ region });
-    }
+    // onRegionChange(region) {
+    //     this.setState({ region });
+    // }
 
     onFind(place) {
         this.setState({
             loading: true,
             finding: place,
-            selectedTab: (place === "pharmacy") ? 1 : (place === "hospitals") ? 2 : (place === "blood bank") ? 3 : -1
+            selectedTab: (place === "pharmacy") ? 1 : (place === "hospital") ? 2 : (place === "blood bank") ? 3 : -1
         })
         let places = []
         let markers = []
@@ -103,16 +109,16 @@ class Home extends Component {
         region = {
             latitude: this.state.region.latitude,
             longitude: this.state.region.longitude,
-            latitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.0005 : 0.0005,
-            longitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.0005 : 0.0005,
+            latitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospital") ? 0.0005 : 0.0005,
+            longitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospital") ? 0.0005 : 0.0005,
         }
 
         this.setState({
             region: {
                 latitude: this.state.region.latitude,
                 longitude: this.state.region.longitude,
-                latitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.15 : 0.15,
-                longitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospitals") ? 0.15 : 0.15,
+                latitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospital") ? 0.15 : 0.15,
+                longitudeDelta: (place === "pharmacy") ? 0.05 : (place === "hospital") ? 0.15 : 0.15,
             }
         })
 
@@ -192,6 +198,7 @@ class Home extends Component {
         const { latitude, longitude } = this.state.region;
         const { latitudeD, longitudeD } = this.state.destination;
         return (
+            <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
             <View style={container}>
                 <StatusBar backgroundColor="blue" barStyle="light-content" />
                 <MapView
@@ -200,6 +207,7 @@ class Home extends Component {
                     zoomEnabled={!loading}
                     onRegionChange={this.onRegionChange}
                     showsUserLocation
+                    showsMyLocationButton={false}                    
                 >
                     {(this.state.makePath) ?
                         <PolylineDirection
@@ -266,7 +274,7 @@ class Home extends Component {
                     <TouchableOpacity
                         style={buttonStyle}
                         disabled={loading}
-                        onPress={() => this.onFind('hospitals')}
+                        onPress={() => this.onFind('hospital')}
                     >
                         <FontAwesomeIcon
                             name="hospital"
@@ -411,6 +419,7 @@ class Home extends Component {
                     </View>
                 </Modal>
             </View>
+            </AndroidBackHandler>
         );
     }
 }

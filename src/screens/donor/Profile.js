@@ -73,7 +73,8 @@ class Profile extends Component {
                     phoneNo: this.state.phoneNo,
                     address: this.state.address,
                     image: this.state.image,
-                    weight: this.state.weight
+                    weight: this.state.weight,
+                    city: this.state.city
                 }).then(() => {
                     firestore().collection('Users').doc(this.state.userDetails.id)
                         .get()

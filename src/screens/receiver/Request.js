@@ -104,6 +104,15 @@ class Request extends Component {
                     date: new Date().toDateString()
                 }).then((docRef) => {
                     this.requestChecker();
+                    this.timer = setInterval(() => 
+                    firestore().collection('Requests').doc(requestId).update({
+                        status: 'Not Accpeted',
+                        donorId: 0
+                    }).then(() => {this.setState({
+                        loading: false
+                    })
+                    this.props.navigation.pop();
+                }), 60000)
                 }).catch((error) => {
                     this.setState({
                         loading: false
@@ -124,6 +133,7 @@ class Request extends Component {
             }
         } else {
             alert('Currently no donors are available.');
+            this.props.navigation.pop();
             this.setState({
                 loading: false
             })
@@ -188,13 +198,18 @@ class Request extends Component {
             } else if (snapshot.data().status === "rejected") {
                 let index = this.state.currentIndex + 1;
                 this.addRequest(this.state.requestId, index);
+            } else if (snapshot.data().status === "Not Accpeted") {
+                clearInterval(this.timer);
+                alert('Currently no donors are available.');
             }
         })
     }
 
-    onRegionChange(region) {
-        region => this.setState({ region });
-    }
+    // onRegionChange(region) {
+    //     this.setState({
+    //         region
+    //     })
+    // }
 
     async onFind() {
         let id = await this.generateRequestId();
@@ -246,6 +261,7 @@ class Request extends Component {
                     zoomEnabled={!loading}
                     onRegionChange={this.onRegionChange}
                     showsUserLocation
+                    showsMyLocationButton={false}
                 >
                     {(donor.id !== '') &&
                         <PolylineDirection

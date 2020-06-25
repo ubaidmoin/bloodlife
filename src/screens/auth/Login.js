@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, StyleSheet, Easing, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
+import { Keyboard, View, Text, Animated, StyleSheet, Easing, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { connect } from 'react-redux';
 import auth from '@react-native-firebase/auth';
@@ -42,7 +42,8 @@ class Login extends Component {
         }).start();
         const value = await AsyncStorage.getItem('@userDetails');
         if (value !== null) {
-            const userDetails = JSON.parse(value);
+            console.log(value)
+            const userDetails = JSON.parse(value);            
             if (userDetails) {
                 const setUser = this.props.setUserData;
                 setUser(userDetails);
@@ -67,7 +68,8 @@ class Login extends Component {
         }
     }
 
-    onButtonPress() {        
+    onButtonPress() {  
+        Keyboard.dismiss();      
         this.setState({
             loading: true
         })
@@ -95,6 +97,7 @@ class Login extends Component {
                                 }
                                 const setUser = this.props.setUserData;
                                 setUser(userDetails);
+                                this.storeData(this.props.userDetails);
                                 this.props.navigation.navigate('AdminHome');
                             }
                         })
@@ -191,7 +194,8 @@ class Login extends Component {
                         alert('Email not verified.');
                     }
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.log(err)
                     this.setState({
                         loading: false,
                         email: '',

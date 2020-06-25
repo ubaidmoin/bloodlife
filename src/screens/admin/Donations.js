@@ -26,7 +26,9 @@ class Donation extends Component {
             isModalVisible: false,
             loading: false,
             selectedIndex: 0,
-            phoneNo: ''
+            phoneNo: '',
+            deleting: false,
+            deleteID: -1
         };
     }
 
@@ -63,22 +65,41 @@ class Donation extends Component {
 
     addOption = (id) => new Promise((resolve, reject) => {
         const { title, bank, type, accNo, phoneNo } = this.state;
-        firestore().collection('DonationOptions').doc(id).set({
-            id: id,
-            title: (this.state.selectedIndex === 0) ? 'Bank Account' : 'Other Account',
-            bank: bank,            
-            accNo: accNo,
-            phoneNo: phoneNo
-        }).then((docRef) => {
-            resolve(true);
-            alert('Option successfully added.')
-        }).catch((error) => {
-            reject(false);
+
+        if (bank === '') {
+            (this.state.selectedIndex === 0) ? alert('Bank Name field could not be empty.') : alert('Account Title field could not be empty.')
+        } else if (title === '' && this.state.selectedIndex === 0) {
+            alert('Title field could not be empty.')
+        } else if (accNo === '') {
+            (this.state.selectedIndex === 0) ? alert('Account No. field could not be empty.') : alert('CNIC field could not be empty.')
+        } else if (phoneNo === '') {
+            alert('Phone No. field could not be empty.')
+        } else {
             this.setState({
-                loading: false
+                loading: true
             })
-            alert('An error occured.')
-        });
+            firestore().collection('DonationOptions').doc(id).set({
+                id: id,
+                title: (this.state.selectedIndex === 0) ? 'Bank Account' : 'Other Account',
+                bank: bank,
+                accNo: accNo,
+                phoneNo: phoneNo
+            }).then((docRef) => {
+                resolve(true);
+                this.setState({
+                    loading: false,
+                    isModalVisible: false
+                })
+                alert('Option successfully added.')
+            }).catch((error) => {
+                reject(false);
+                this.setState({
+                    loading: false,
+                    isModalVisible: false
+                })
+                alert('An error occured.')
+            });
+        }
     })
 
     addNewOption() {
@@ -87,15 +108,21 @@ class Donation extends Component {
         })
     }
 
-    async onAddOption() {
-        this.setState({
-            loading: true
-        })
+    async onAddOption() {        
         let id = await this.generateOptionId();
         this.addOption(id);
+    }
+
+    removeDonationOptions(id) {
         this.setState({
-            loading: false,
-            isModalVisible: false
+            deleting: true,
+            deleteID: id
+        })
+        firestore().collection('DonationOptions').doc(id).delete().then(() => {
+            this.setState({
+                deleting: false,
+                deleteID: -1
+            })
         })
     }
 
@@ -103,8 +130,13 @@ class Donation extends Component {
         const { event, image, eventTitle, eventName, eventDate, buttonStyle, listTextStyle } = styles;
         return (
             <View style={event} key={index}>
-                <View style={{ borderBottomWidth: 1, paddingBottom: 5 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, paddingBottom: 5 }}>
                     <Text style={eventName}>{item.title}</Text>
+                    {this.state.deleting && this.state.deleteID === item.id ?
+                        <ActivityIndicator size={"small"} color={"#ff5d5b"} /> :
+                        <TouchableOpacity onPress={() => this.removeDonationOptions(item.id)}>
+                            <Text style={{ color: '#ff5d5b' }}>Remove</Text>
+                        </TouchableOpacity>}
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 5 }}>
                     <Text style={listTextStyle}>{(item.title === "Bank Account") ? 'Bank Name:' : 'Other Account Name:'}</Text>
@@ -181,29 +213,24 @@ class Donation extends Component {
                             value={bank}
                             onChangeText={bank => this.setState({ bank })}
                         />
-                        {(this.state.selectedIndex === 0) && 
-                        <TextInput
-                        label={(this.state.selectedIndex === 0) ? 'Account Title' : 'CNIC'}
-                        mode='outlined'
-                        style={{
-                            height: 40,
-                            width: '80%',
-                        }}
-                        theme={{
-                            colors: { primary: '#ff5d5b', underlineColor: 'black' }
-                        }}
-                        selectionColor='#ff5d5b'
-                        underlineColor='#ff5d5b'
-                        value={title}
-                        onChangeText={title => this.setState({ title })}
-                    />}
-                        <TextInput
-                            label={(this.state.selectedIndex === 0) ? 'Account No.' : 'CNIC'}
-                            render={(this.state.selectedIndex === 1) ? props =>
-                                <TextInputMask
-                                  {...props}
-                                  mask="[00000]-[0000000]-[0]"
-                                /> : null}
+                        {(this.state.selectedIndex === 0) &&
+                            <TextInput
+                                label={(this.state.selectedIndex === 0) ? 'Account Title' : 'CNIC'}
+                                mode='outlined'
+                                style={{
+                                    height: 40,
+                                    width: '80%',
+                                }}
+                                theme={{
+                                    colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                                }}
+                                selectionColor='#ff5d5b'
+                                underlineColor='#ff5d5b'
+                                value={title}
+                                onChangeText={title => this.setState({ title })}
+                            />}
+                        {(this.state.selectedIndex === 0) ? <TextInput
+                            label={'Account No.'}
                             mode='outlined'
                             style={{
                                 height: 40,
@@ -217,14 +244,35 @@ class Donation extends Component {
                             value={accNo}
                             onChangeText={accNo => this.setState({ accNo })}
                             keyboardType="number-pad"
-                        />
+                        /> :
+                            <TextInput
+                                label={'CNIC'}
+                                render={props =>
+                                    <TextInputMask
+                                        {...props}
+                                        mask="[00000]-[0000000]-[0]"
+                                    />}
+                                mode='outlined'
+                                style={{
+                                    height: 40,
+                                    width: '80%',
+                                }}
+                                theme={{
+                                    colors: { primary: '#ff5d5b', underlineColor: 'black' }
+                                }}
+                                selectionColor='#ff5d5b'
+                                underlineColor='#ff5d5b'
+                                value={accNo}
+                                onChangeText={accNo => this.setState({ accNo })}
+                                keyboardType="number-pad"
+                            />}
                         <TextInput
                             label={'Phone Number'}
                             mode='outlined'
                             render={props =>
                                 <TextInputMask
-                                  {...props}
-                                  mask="+92 ([000]) [000] [0000]"
+                                    {...props}
+                                    mask="+92 ([000]) [000] [0000]"
                                 />}
                             style={{
                                 height: 40,

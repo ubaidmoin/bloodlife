@@ -22,6 +22,36 @@ class Contacts extends Component {
                     id: 2,
                     name: 'Rescue',
                     phoneNo: '1122'
+                },
+                {
+                    id: 3,
+                    name: 'Ehdi Ambulance',
+                    phoneNo: '115'
+                },
+                {
+                    id: 4,
+                    name: 'Civil Hospital',
+                    phoneNo: '555 0311'
+                },
+                {
+                    id: 5,
+                    name: 'Fire Brigade Center',
+                    phoneNo: '16'
+                },
+                {
+                    id: 6,
+                    name: 'Bomb Disposal',
+                    phoneNo: '9222362'
+                },
+                {
+                    id: 7,
+                    name: 'Hospital services',
+                    phoneNo: '218300-9'
+                },
+                {
+                    id: 8,
+                    name: 'Hilal-e-Ahmar',
+                    phoneNo: '855292'
                 }
             ],
             searchEmergencyContacts: [
@@ -34,6 +64,36 @@ class Contacts extends Component {
                     id: 2,
                     name: 'Rescue',
                     phoneNo: '1122'
+                },
+                {
+                    id: 3,
+                    name: 'Ehdi Ambulance',
+                    phoneNo: '115'
+                },
+                {
+                    id: 4,
+                    name: 'Civil Hospital',
+                    phoneNo: '555 0311'
+                },
+                {
+                    id: 5,
+                    name: 'Fire Brigade Center',
+                    phoneNo: '16'
+                },
+                {
+                    id: 6,
+                    name: 'Bomb Disposal',
+                    phoneNo: '9222362'
+                },
+                {
+                    id: 7,
+                    name: 'Hospital services',
+                    phoneNo: '218300-9'
+                },
+                {
+                    id: 8,
+                    name: 'Hilal-e-Ahmar',
+                    phoneNo: '855292'
                 }
             ],
             filter: ''
