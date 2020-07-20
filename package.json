@@ -29,6 +29,7 @@
     "react-native": "0.62.2",
     "react-native-communications": "^2.2.1",
     "react-native-datepicker": "^1.7.2",
+    "react-native-eject": "^0.1.2",
     "react-native-geolocation-service": "^4.0.0",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-image-picker": "^2.3.1",
