@@ -141,11 +141,17 @@ class Event extends Component {
   addNewEvent() {
     this.setState({
       isModalVisible: true,
+      modify: false,
+      dateChanged: false,
+      name: '',
+      description: '',
+      date: new Date(),
+      image: '',
     });
   }
 
   async onAddEvent() {
-    console.log(this.state.dateChanged)
+    console.log(this.state.dateChanged);
     if (this.state.modify) {
       firestore()
         .collection('Events')

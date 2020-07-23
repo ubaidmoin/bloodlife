@@ -189,7 +189,11 @@ class Request extends Component {
       .then((snapshot) => {
         let donors = [];
         snapshot.forEach((user) => {
-          if (user.data().userType === 'donor' && user.data().availability) {
+          if (
+            user.data().userType === 'donor' &&
+            user.data().availability &&
+            user.data().bloodGroup === this.state.bloodGroup
+          ) {
             const distance = this.calculateDistance(
               this.state.region.latitude,
               this.state.region.longitude,
@@ -224,6 +228,7 @@ class Request extends Component {
             .doc(snapshot.data().donorId)
             .get()
             .then((donor) => {
+              clearInterval(this.timer);
               this.setState({
                 loading: false,
                 donor: {
@@ -367,7 +372,12 @@ class Request extends Component {
           hasBackdrop={false}
           coverScreen={false}>
           <View>
-            <View style={{paddingHorizontal: 10}}>
+            <View
+              style={{
+                paddingHorizontal: 15,
+                width: '80%',
+                alignItems: 'center',
+              }}>
               {!submitRatings ? (
                 <View
                   style={{
@@ -534,7 +544,7 @@ const styles = StyleSheet.create({
     bottom: Dimensions.get('screen').height * 0.01,
     left: Dimensions.get('screen').width * 0.0125,
     backgroundColor: 'white',
-    height: 185,
+    height: 200,
     borderRadius: 10,
     shadowColor: 'black',
     shadowOffset: {

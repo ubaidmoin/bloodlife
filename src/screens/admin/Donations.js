@@ -121,6 +121,11 @@ class Donation extends Component {
             this.setState({
               loading: false,
               isModalVisible: false,
+              type: '',
+              bank: '',
+              title: '',
+              accNo: '',
+              phoneNo: '',
             });
             alert('Option successfully added.');
           })
@@ -129,6 +134,11 @@ class Donation extends Component {
             this.setState({
               loading: false,
               isModalVisible: false,
+              type: '',
+              bank: '',
+              title: '',
+              accNo: '',
+              phoneNo: '',
             });
             alert('An error occured.');
           });
