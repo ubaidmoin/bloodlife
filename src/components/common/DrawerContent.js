@@ -31,7 +31,7 @@ const DrawerContent = (props) => {
           </Text>
           {userDetails.userType !== 'admin' && (
             <View style={styles.ratings}>
-              <Text style={styles.textStyle}>{userDetails.ratings}</Text>
+              <Text style={styles.textStyle}>{userDetails.ratings.toFixed(2)}</Text>
               <FontAwesomeIcon name="star" size={20} color={'#ff5d5b'} />
             </View>
           )}
@@ -55,10 +55,17 @@ const DrawerContent = (props) => {
       </View>
       <DrawerItemList {...props} />
       <TouchableOpacity
+        style={{flexDirection: 'row', alignItems: 'center'}}
         onPress={() => {
           AsyncStorage.removeItem('@userDetails');
           props.navigation.navigate('Auth');
         }}>
+          <EntypoIcon
+      style={{marginLeft: 17.5}}
+      name="log-out"
+      size={25}
+      color={'#696565'}
+    />
         <Text style={styles.logoutButtonTextStyle}>Log out</Text>
       </TouchableOpacity>
       {props.user === 'receiver' ? (
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   logoutButtonTextStyle: {
-    marginLeft: 17.5,
+    marginLeft: 26,
     marginVertical: 10,
     color: '#696565',
     fontSize: 14.25,

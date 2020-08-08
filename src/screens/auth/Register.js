@@ -16,7 +16,7 @@ import TextInputMask from 'react-native-text-input-mask';
 import DatePicker from 'react-native-datepicker';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import * as Validations from '../../settings/Validations';
 
 export default class Register extends Component {
@@ -35,6 +35,7 @@ export default class Register extends Component {
       error: '',
       loading: false,
       passwordMatch: false,
+      showPassword: true,
     };
     // this.ref = firebase.firestore().collection('Users');
   }
@@ -283,12 +284,16 @@ export default class Register extends Component {
               },
               dateInput: {
                 marginLeft: 36,
-                borderWidth: 0,
+                backgroundColor: '#F4F6F8',
+                useNativeDriver: true,
+                borderRadius: 5,
+                borderColor: '#696A6B',
               },
             }}
             onDateChange={(dob) => {
               this.setState({dob: dob});
-            }}></DatePicker>
+            }}
+          />
           <TextInput
             label="Address"
             mode="outlined"
@@ -320,25 +325,35 @@ export default class Register extends Component {
             value={this.state.city}
             onChangeText={(city) => this.setState({city})}
           />
-          <TextInput
-            label="Password"
-            mode="outlined"
-            style={{
-              height: 40,
-              width: '80%',
-            }}
-            theme={{
-              colors: {
-                primary: this.state.passwordMatch ? 'green' : '#ff5d5b',
-                underlineColor: 'black',
-              },
-            }}
-            selectionColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
-            underlineColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
-            value={this.state.password}
-            secureTextEntry
-            onChangeText={(password) => this.setState({password})}
-          />
+          <View style={styles.searchSection}>
+            <TextInput
+              label="Password"
+              mode="outlined"
+              style={{
+                height: 40,
+                width: '70%',
+              }}
+              theme={{
+                colors: {
+                  primary: this.state.passwordMatch ? 'green' : '#ff5d5b',
+                  underlineColor: 'black',
+                },
+              }}
+              selectionColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
+              underlineColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
+              value={this.state.password}
+              secureTextEntry={this.state.showPassword}
+              onChangeText={(password) => this.setState({password})}
+            />
+            <TouchableOpacity onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
+            <EntypoIcon
+              style={styles.searchIcon}
+              name="eye"
+              size={20}
+              color="#000"
+            />
+            </TouchableOpacity>
+          </View>
           <TextInput
             label="Confirm Password"
             mode="outlined"
@@ -425,5 +440,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
+  },
+  searchSection: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    padding: 10,
   },
 });

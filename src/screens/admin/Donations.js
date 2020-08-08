@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width * 0.9,
     marginHorizontal: Dimensions.get('screen').width * 0.05,
     marginVertical: 10,
-    elevation: 1000,
+    elevation: 10,
     backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 5,

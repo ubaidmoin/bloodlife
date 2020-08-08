@@ -340,6 +340,8 @@ export default class AddDonor extends Component {
                 marginLeft: 36,
                 backgroundColor: '#F4F6F8',
                 useNativeDriver: true,
+                borderRadius: 5,
+                borderColor: '#696A6B',
               },
               // ... You can check the source to find the other keys.
             }}
@@ -441,6 +443,8 @@ export default class AddDonor extends Component {
                 marginLeft: 36,
                 backgroundColor: '#F4F6F8',
                 useNativeDriver: true,
+                borderRadius: 5,
+                borderColor: '#696A6B',
               },
               // ... You can check the source to find the other keys.
             }}

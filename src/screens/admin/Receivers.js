@@ -154,15 +154,15 @@ class Receivers extends Component {
                   style={image}
                 />
                 <View style={{marginLeft: 5}}>
-                  <Text style={{fontWeight: 'bold', fontSize: 12}}>
+                  <Text style={{fontWeight: 'bold', fontSize: 12, color: '#fff'}}>
                     {item.id}
                   </Text>
                   <Text style={title}>
                     {item.firstName + ' ' + item.lastName}
                   </Text>
                   <View style={styles.ratings}>
-                    <Text style={styles.textStyle}>{item.ratings}</Text>
-                    <FontAwesomeIcon name="star" size={15} color={'#000'} />
+                    <Text style={styles.textStyle}>{item.ratings.toFixed(2)}</Text>
+                    <FontAwesomeIcon name="star" size={15} color={'#fff'} />
                   </View>
                 </View>
               </View>
@@ -175,7 +175,7 @@ class Receivers extends Component {
                       item.showDescription !== true ? 'downcircle' : 'upcircle'
                     }
                     size={20}
-                    color="black"
+                    color="#fff"
                   />
                 </TouchableOpacity>
               </View>
@@ -189,7 +189,7 @@ class Receivers extends Component {
                   marginHorizontal: Dimensions.get('screen').width * 0.05,
                   paddingBottom: 10,
                   marginTop: -15,
-                  backgroundColor: 'white',
+                  backgroundColor: '#ff5d5b',
                   borderRadius: 5,
                 }}>
                 <View style={{width: '100%'}}>
@@ -201,10 +201,10 @@ class Receivers extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Email:
                     </Text>
-                    <Text style={{fontSize: 15}}>{item.email}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>{item.email}</Text>
                   </View>
                   <View
                     style={{
@@ -214,10 +214,10 @@ class Receivers extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Phone Number:
                     </Text>
-                    <Text style={{fontSize: 15}}>{item.phoneNo}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>{item.phoneNo}</Text>
                   </View>
                   <View
                     style={{
@@ -227,10 +227,10 @@ class Receivers extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Address:
                     </Text>
-                    <Text style={{fontSize: 15}}>{item.address}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>{item.address}</Text>
                   </View>
                   <View style={{paddingHorizontal: '30%'}}>
                     <TouchableOpacity
@@ -255,7 +255,7 @@ class Receivers extends Component {
   render() {
     const {search} = styles;
     return (
-      <View style={{width: '100%', height: '100%', backgroundColor: '#EBEFF3'}}>
+      <View style={{width: '100%', height: '100%', backgroundColor: '#fff'}}>
         <View style={search}>
           <TextInput
             label="Search"
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
     marginHorizontal: Dimensions.get('screen').width * 0.05,
-    backgroundColor: '#fff',
+    backgroundColor: '#ff5d5b',
     elevation: 1000,
     borderRadius: 5,
   },
@@ -345,6 +345,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#fff',
   },
   historyTitleContainer: {
     flexDirection: 'row',
@@ -365,6 +366,7 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 15,
     fontWeight: 'bold',
+    color: '#fff',
   },
   blockButtonStyle: {
     backgroundColor: '#ff5d5b',

@@ -137,7 +137,7 @@ class Contacts extends Component {
           </View>
           <TouchableOpacity
             onPress={() => Communications.phonecall(item.phoneNo, true)}>
-            <FontAwesomeIcon name="phone" size={30} color="#ff5d5b" />
+            <FontAwesomeIcon name="phone" size={30} color="#fff" />
             <Text style={phoneNo}>Dial</Text>
           </TouchableOpacity>
         </View>
@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   search: {
     width: Dimensions.get('screen').width,
@@ -191,25 +192,26 @@ const styles = StyleSheet.create({
   list: {
     width: Dimensions.get('screen').width * 0.9,
     padding: 10,
-    marginVertical: 10,
     marginHorizontal: Dimensions.get('screen').width * 0.05,
-    backgroundColor: '#fff',
-    elevation: 1000,
+    // backgroundColor: '#fff',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ff5d5b',
+    color: '#fff',
   },
   historyTitleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 5,
+    padding: 10,
+    backgroundColor: '#ff5d5b',
+    borderRadius: 5,
+    elevation: 10,
   },
   phoneNo: {
     fontSize: 15,
-    color: '#ff5d5b',
+    color: '#fff',
   },
   phoneContainer: {
     flexDirection: 'row',

@@ -15,7 +15,7 @@ import {connect} from 'react-redux';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 import * as actions from '../../actions/ActionTypes';
 
@@ -28,6 +28,7 @@ class Login extends Component {
       password: '',
       error: '',
       loading: false,
+      showPassword: true,
     };
     this.animatedValue = new Animated.Value(0);
   }
@@ -262,7 +263,7 @@ class Login extends Component {
             mode="outlined"
             style={{
               height: 40,
-              width: '80%',
+              width: '90%',
             }}
             theme={{
               colors: {primary: '#ff5d5b', underlineColor: 'black'},
@@ -272,22 +273,35 @@ class Login extends Component {
             value={this.state.email}
             onChangeText={(email) => this.setState({email})}
           />
-          <TextInput
-            label="Password"
-            mode="outlined"
-            style={{
-              height: 40,
-              width: '80%',
-            }}
-            theme={{
-              colors: {primary: '#ff5d5b', underlineColor: 'black'},
-            }}
-            selectionColor="#ff5d5b"
-            underlineColor="#ff5d5b"
-            value={this.state.password}
-            secureTextEntry
-            onChangeText={(password) => this.setState({password})}
-          />
+          <View style={styles.searchSection}>
+            <TextInput
+              label="Password"
+              mode="outlined"
+              style={{
+                height: 40,
+                width: '80%',
+              }}
+              theme={{
+                colors: {
+                  primary: this.state.passwordMatch ? 'green' : '#ff5d5b',
+                  underlineColor: 'black',
+                },
+              }}
+              selectionColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
+              underlineColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
+              value={this.state.password}
+              secureTextEntry={this.state.showPassword}
+              onChangeText={(password) => this.setState({password})}
+            />
+            <TouchableOpacity onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
+            <EntypoIcon
+              style={styles.searchIcon}
+              name="eye"
+              size={20}
+              color="#000"
+            />
+            </TouchableOpacity>
+          </View>
           <View style={{paddingTop: 10}}>
             <TouchableOpacity
               style={
@@ -366,6 +380,15 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: 'white',
+  },
+  searchSection: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    padding: 5,
   },
 });
 

@@ -12,7 +12,7 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import {Button} from 'react-native-paper';
-import MapView, {Marker, AnimatedRegion} from 'react-native-maps';
+import MapView, {Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
@@ -342,7 +342,7 @@ class DriverHome extends Component {
       selectedTab:
         place === 'pharmacy'
           ? 1
-          : place === 'hospitals'
+          : place === 'hospital'
           ? 2
           : place === 'blood bank'
           ? 3
@@ -584,7 +584,7 @@ class DriverHome extends Component {
               <EntypoIcon
                 name="drop"
                 size={25}
-                color={selectedTab !== 0 ? '#ff5d5b' : 'red'}
+                color={selectedTab !== 0 ? '#fff' : 'black'}
               />
               <Text style={selectedTab === 0 ? selectedTextStyle : textStyle}>
                 REQUEST BLOOD
@@ -597,7 +597,7 @@ class DriverHome extends Component {
               <MaterialIcon
                 name="local-pharmacy"
                 size={25}
-                color={selectedTab !== 1 ? '#ff5d5b' : 'red'}
+                color={selectedTab !== 1 ? '#fff' : 'black'}
               />
               <Text style={selectedTab === 1 ? selectedTextStyle : textStyle}>
                 FIND PHARMACY
@@ -610,7 +610,7 @@ class DriverHome extends Component {
               <FontAwesomeIcon
                 name="hospital"
                 size={25}
-                color={selectedTab !== 2 ? '#ff5d5b' : 'red'}
+                color={selectedTab !== 2 ? '#fff' : 'black'}
               />
               <Text style={selectedTab === 2 ? selectedTextStyle : textStyle}>
                 FIND HOSPITAL
@@ -623,7 +623,7 @@ class DriverHome extends Component {
               <MaterialCommunityIcons
                 name="blood-bag"
                 size={25}
-                color={selectedTab !== 3 ? '#ff5d5b' : 'red'}
+                color={selectedTab !== 3 ? '#fff' : 'black'}
               />
               <Text style={selectedTab === 3 ? selectedTextStyle : textStyle}>
                 FIND BLOODBANK
@@ -636,7 +636,7 @@ class DriverHome extends Component {
                 this.setState({selectedTab: -1});
                 this.props.navigation.navigate('DonorEmergencyContacts');
               }}>
-              <SimpleLineIcon name="call-out" size={25} color="#ff5d5b" />
+              <SimpleLineIcon name="call-out" size={25} color="#fff" />
               <Text style={textStyle}>EMERGENCY</Text>
             </TouchableOpacity>
           </View>
@@ -697,7 +697,7 @@ class DriverHome extends Component {
                   disabled={this.state.makePath}
                   theme={buttonTheme}
                   onPress={() =>
-                    this.setState({makePath: true, checkAlert: true})
+                    this.setState({makePath: true, checkAlert: true, modal: false})
                   }>
                   Show Route
                 </Button>
@@ -745,7 +745,7 @@ class DriverHome extends Component {
                           {receiver.firstName + ' ' + receiver.lastName}
                         </Text>
                         <View style={ratings}>
-                          <Text style={nameStyle}>{receiver.ratings}</Text>
+                          <Text style={nameStyle}>{receiver.ratings && receiver.ratings.toFixed(2)}</Text>
                           <FontAwesomeIcon
                             name="star"
                             size={20}
@@ -961,15 +961,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'white',
-    opacity: 0.9,
+    backgroundColor: '#ff5d5b',
     height: 60,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
   textStyle: {
-    color: '#ff5d5b',
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: 8.25,
   },
@@ -979,7 +978,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   selectedTextStyle: {
-    color: 'red',
+    color: 'black',
     fontWeight: 'bold',
     fontSize: 8.3,
   },

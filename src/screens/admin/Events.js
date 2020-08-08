@@ -278,17 +278,25 @@ class Event extends Component {
         <View style={eventTitle}>
           <View>
             <Text style={eventName}>{item.name}</Text>
-            <Text style={eventDate}>{item.date}</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: Dimensions.get('window').width * 0.8,
+              }}>
+              <Text style={eventDate}>{item.date}</Text>
+              <TouchableOpacity
+                style={buttonStyle}
+                onPress={() => this.showDescription(index)}>
+                <Text style={textStyle}>
+                  {item.showDescription
+                    ? 'show less'.toUpperCase()
+                    : 'show more'.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <TouchableOpacity
-            style={buttonStyle}
-            onPress={() => this.showDescription(index)}>
-            <Text style={textStyle}>
-              {item.showDescription
-                ? 'show less'.toUpperCase()
-                : 'show more'.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
         </View>
         {item.showDescription === true ? (
           <View
@@ -535,9 +543,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width * 0.9,
     marginHorizontal: Dimensions.get('screen').width * 0.05,
     marginVertical: 10,
-    elevation: 1000,
+    elevation: 10,
     backgroundColor: '#ffffff',
     padding: 10,
+    borderRadius: 5,
   },
   image: {
     width: '100%',

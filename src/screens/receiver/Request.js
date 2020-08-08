@@ -369,7 +369,8 @@ class Request extends Component {
           <View>
             <View
               style={{
-                paddingHorizontal: 15,
+                padding: 5,
+                margin: 10,
                 width: '80%',
                 alignItems: 'center',
               }}>
@@ -393,7 +394,7 @@ class Request extends Component {
                       {donor.firstName + ' ' + donor.lastName}
                     </Text>
                     <View style={ratings}>
-                      <Text style={textStyle}>{donor.ratings}</Text>
+                      <Text style={textStyle}>{donor.ratings && donor.ratings.toFixed(2)}</Text>
                       <FontAwesomeIcon
                         name="star"
                         size={20}

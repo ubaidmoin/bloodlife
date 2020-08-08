@@ -3,6 +3,11 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import OcticonsIcons from 'react-native-vector-icons/Octicons';
 
 import LoginScreen from '../screens/auth/Login';
 import RegisterScreen from '../screens/auth/Register';
@@ -51,7 +56,7 @@ const lockedDrawerOptions = ({title}) => ({
   drawerLockMode: 'locked-closed',
 });
 
-const HeaderWithMenu = ({title}, navigation) => ({
+const HeaderWithMenu = ({title, icon}, navigation) => ({
   title: title,
   headerTitleStyle: {
     color: '#ff5d5b',
@@ -72,6 +77,7 @@ const HeaderWithBackButton = ({title}, navigation) => ({
   headerTitleStyle: {
     color: '#ff5d5b',
   },
+  headerTintColor: '#ff5d5b',
 });
 
 const AdminHomeStack = () => (
@@ -151,27 +157,42 @@ const AdminDrawer = () => (
     <Drawer.Screen
       name="AdminHome"
       component={AdminHomeStack}
-      options={{title: 'Home'}}
+      options={{
+        title: 'Home',
+        drawerIcon: ({ color }) => <EntypoIcon name={"home"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="DonationOptions"
       component={AdminDonationsStack}
-      options={{title: 'Donation Options'}}
+      options={{
+        title: 'Donation Options',
+      drawerIcon: ({ color }) => <FontAwesome5Icon name={"donate"} color={color} size={25} />,
+    }}
     />
     <Drawer.Screen
       name="AdminEvents"
       component={AdminEventsStack}
-      options={{title: 'Events'}}
+      options={{
+        title: 'Events',
+        drawerIcon: ({ color }) => <MaterialIcons name={"event"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="Complaints"
       component={AdminComplaintsStack}
-      options={{title: 'Complaints'}}
+      options={{
+        title: 'Complaints',
+        drawerIcon: ({ color }) => <OcticonsIcons name={"issue-opened"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="Feedbacks"
       component={AdminFeedbacksStack}
-      options={{title: 'Feedbacks'}}
+      options={{
+        title: 'Feedback',
+        drawerIcon: ({ color }) => <MaterialIcons name={"feedback"} color={color} size={25} />,
+      }}
     />
     {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
   </Drawer.Navigator>
@@ -293,32 +314,50 @@ const DonorDrawer = () => (
     <Drawer.Screen
       name="DonorHome"
       component={DonorStack}
-      options={{title: 'Home'}}
+      options={{
+        title: 'Home',
+        drawerIcon: ({ color }) => <EntypoIcon name={"home"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="DonateNow"
       component={DonateNowStack}
-      options={{title: 'Donate Now'}}
+      options={{
+        title: 'Donate Now',
+      drawerIcon: ({ color }) => <FontAwesome5Icon name={"donate"} color={color} size={25} />,
+    }}
     />
     <Drawer.Screen
       name="Events"
       component={EventDonorStack}
-      options={{title: 'Events'}}
+      options={{
+        title: 'Events',
+        drawerIcon: ({ color }) => <MaterialIcons name={"event"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="History"
       component={HistoryDonorStack}
-      options={{title: 'Donation History'}}
+      options={{
+        title: 'Donation History',
+        drawerIcon: ({ color }) => <FontAwesome5Icon name={"history"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="Feedback"
       component={FeedbackDonorStack}
-      options={{title: 'Feedback'}}
+      options={{
+        title: 'Feedback',
+        drawerIcon: ({ color }) => <MaterialIcons name={"feedback"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="ContactUs"
       component={ContactDonorStack}
-      options={{title: 'Contact Us'}}
+      options={{
+        title: 'Contact Us',
+        drawerIcon: ({ color }) => <FontAwesomeIcon name={"phone"} color={color} size={25} />,
+      }}
     />
     {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
   </Drawer.Navigator>
@@ -425,32 +464,50 @@ const ReceiverDrawer = () => (
     <Drawer.Screen
       name="ReceiverHome"
       component={ReceiverStack}
-      options={{title: 'Home'}}
+      options={{
+        title: 'Home',
+        drawerIcon: ({ color }) => <EntypoIcon name={"home"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="ReceiverDonateNow"
       component={ReceiverDonateNowStack}
-      options={{title: 'Donate Now'}}
+      options={{
+        title: 'Donate Now',
+      drawerIcon: ({ color }) => <FontAwesome5Icon name={"donate"} color={color} size={25} />,
+    }}
     />
     <Drawer.Screen
       name="ReceiverEvents"
       component={EventReceiverStack}
-      options={{title: 'Events'}}
+      options={{
+        title: 'Events',
+        drawerIcon: ({ color }) => <MaterialIcons name={"event"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="ReceiverHistory"
       component={HistoryReceiverStack}
-      options={{title: 'History'}}
+      options={{
+        title: 'History',
+        drawerIcon: ({ color }) => <FontAwesome5Icon name={"history"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="Feedback"
       component={FeedbackReceiverStack}
-      options={{title: 'Feedback'}}
+      options={{
+        title: 'Feedback',
+        drawerIcon: ({ color }) => <MaterialIcons name={"feedback"} color={color} size={25} />,
+      }}
     />
     <Drawer.Screen
       name="ContactUs"
       component={ContactReceiverStack}
-      options={{title: 'Contact Us'}}
+      options={{
+        title: 'Contact Us',
+        drawerIcon: ({ color }) => <FontAwesomeIcon name={"phone"} color={color} size={25} />,
+      }}
     />
     {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
   </Drawer.Navigator>
