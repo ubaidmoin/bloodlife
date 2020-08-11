@@ -279,7 +279,7 @@ class Login extends Component {
               mode="outlined"
               style={{
                 height: 40,
-                width: '80%',
+                width: '90%',
               }}
               theme={{
                 colors: {
@@ -293,11 +293,11 @@ class Login extends Component {
               secureTextEntry={this.state.showPassword}
               onChangeText={(password) => this.setState({password})}
             />
-            <TouchableOpacity onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
+<TouchableOpacity style={{position: 'absolute', top: 7, right: 5, zIndex: 1000 }} onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
             <EntypoIcon
               style={styles.searchIcon}
               name="eye"
-              size={20}
+              size={30}
               color="#000"
             />
             </TouchableOpacity>

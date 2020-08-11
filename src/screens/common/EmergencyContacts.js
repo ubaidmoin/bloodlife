@@ -11,6 +11,7 @@ import Communications from 'react-native-communications';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {TextInput} from 'react-native-paper';
 import {connect} from 'react-redux';
+import firestore, {firebase} from '@react-native-firebase/firestore';
 
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 
@@ -18,92 +19,29 @@ class Contacts extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      emergencyContacts: [
-        {
-          id: 1,
-          name: 'Police',
-          phoneNo: '15',
-        },
-        {
-          id: 2,
-          name: 'Rescue',
-          phoneNo: '1122',
-        },
-        {
-          id: 3,
-          name: 'Ehdi Ambulance',
-          phoneNo: '115',
-        },
-        {
-          id: 4,
-          name: 'Civil Hospital',
-          phoneNo: '555 0311',
-        },
-        {
-          id: 5,
-          name: 'Fire Brigade Center',
-          phoneNo: '16',
-        },
-        {
-          id: 6,
-          name: 'Bomb Disposal',
-          phoneNo: '9222362',
-        },
-        {
-          id: 7,
-          name: 'Hospital services',
-          phoneNo: '218300-9',
-        },
-        {
-          id: 8,
-          name: 'Hilal-e-Ahmar',
-          phoneNo: '855292',
-        },
-      ],
-      searchEmergencyContacts: [
-        {
-          id: 1,
-          name: 'Police',
-          phoneNo: '15',
-        },
-        {
-          id: 2,
-          name: 'Rescue',
-          phoneNo: '1122',
-        },
-        {
-          id: 3,
-          name: 'Ehdi Ambulance',
-          phoneNo: '115',
-        },
-        {
-          id: 4,
-          name: 'Civil Hospital',
-          phoneNo: '555 0311',
-        },
-        {
-          id: 5,
-          name: 'Fire Brigade Center',
-          phoneNo: '16',
-        },
-        {
-          id: 6,
-          name: 'Bomb Disposal',
-          phoneNo: '9222362',
-        },
-        {
-          id: 7,
-          name: 'Hospital services',
-          phoneNo: '218300-9',
-        },
-        {
-          id: 8,
-          name: 'Hilal-e-Ahmar',
-          phoneNo: '855292',
-        },
-      ],
+      emergencyContacts: [],
+      searchEmergencyContacts: [],
       filter: '',
     };
+  }
+
+  componentDidMount() {
+    firestore()
+      .collection('EC')
+      .onSnapshot((snapshot) => {
+        let data = [];
+        snapshot.forEach((event) => {
+          data.push({
+            id: event.id,
+            name: event.data().name,
+            number: event.data().number,
+          });
+        });
+        this.setState({
+          emergencyContacts: data,
+          searchEmergencyContacts: data,
+        });
+      });
   }
 
   filterData(data, text) {
@@ -133,10 +71,10 @@ class Contacts extends Component {
         <View style={historyTitleContainer}>
           <View>
             <Text style={title}>{item.name}</Text>
-            <Text style={phoneNo}>Contact Number: {item.phoneNo}</Text>
+            <Text style={phoneNo}>Contact Number: {item.number}</Text>
           </View>
           <TouchableOpacity
-            onPress={() => Communications.phonecall(item.phoneNo, true)}>
+            onPress={() => Communications.phonecall(item.number, true)}>
             <FontAwesomeIcon name="phone" size={30} color="#fff" />
             <Text style={phoneNo}>Dial</Text>
           </TouchableOpacity>

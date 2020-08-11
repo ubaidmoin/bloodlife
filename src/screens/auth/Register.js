@@ -331,7 +331,7 @@ export default class Register extends Component {
               mode="outlined"
               style={{
                 height: 40,
-                width: '70%',
+                width: '80%',
               }}
               theme={{
                 colors: {
@@ -345,11 +345,11 @@ export default class Register extends Component {
               secureTextEntry={this.state.showPassword}
               onChangeText={(password) => this.setState({password})}
             />
-            <TouchableOpacity onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
+            <TouchableOpacity style={{position: 'absolute', top: 0, right: 5, zIndex: 1000 }} onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
             <EntypoIcon
               style={styles.searchIcon}
               name="eye"
-              size={20}
+              size={30}
               color="#000"
             />
             </TouchableOpacity>

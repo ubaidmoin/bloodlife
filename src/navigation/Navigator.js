@@ -7,6 +7,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import OcticonsIcons from 'react-native-vector-icons/Octicons';
 
 import LoginScreen from '../screens/auth/Login';
@@ -32,6 +33,7 @@ import ProfileReceiverScreen from '../screens/receiver/Profile';
 //Admin Screens
 import AdminHomeScreen from '../screens/admin/Donors';
 import AdminEventsScreen from '../screens/admin/Events';
+import AdminEmergencyContactsScreen from '../screens/admin/EmergencyContacts';
 import AdminDonationScreen from '../screens/admin/Donations';
 import AdminComplaintsScreen from '../screens/admin/Complaints';
 import AdminFeedbacksScreen from '../screens/admin/Feedbacks';
@@ -114,6 +116,16 @@ const AdminEventsStack = () => (
   </Stack.Navigator>
 );
 
+const AdminEmergencyContactsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Emergency Contacts"
+      component={AdminEmergencyContactsScreen}
+      options={({navigation}) => HeaderWithMenu({title: 'Emergency Contacts'}, navigation)}
+    />
+  </Stack.Navigator>
+);
+
 const AdminDonationsStack = () => (
   <Stack.Navigator>
     <Stack.Screen
@@ -160,6 +172,14 @@ const AdminDrawer = () => (
       options={{
         title: 'Home',
         drawerIcon: ({ color }) => <EntypoIcon name={"home"} color={color} size={25} />,
+      }}
+    />
+    <Drawer.Screen
+      name="AdminEC"
+      component={AdminEmergencyContactsStack}
+      options={{
+        title: 'Emergency Contacts',
+        drawerIcon: ({ color }) => <MaterialCommunityIcons name={"contacts"} color={color} size={25} />,
       }}
     />
     <Drawer.Screen

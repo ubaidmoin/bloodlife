@@ -325,6 +325,7 @@ class Home extends Component {
                 REQUEST BLOOD
               </Text>
             </TouchableOpacity>
+            <View style={{width: 1, backgroundColor: '#fff', height: 60}} />
             <TouchableOpacity
               style={buttonStyle}
               disabled={loading}
@@ -338,6 +339,7 @@ class Home extends Component {
                 FIND PHARMACY
               </Text>
             </TouchableOpacity>
+            <View style={{width: 1, backgroundColor: '#fff', height: 60}} />
             <TouchableOpacity
               style={buttonStyle}
               disabled={loading}
@@ -351,6 +353,7 @@ class Home extends Component {
                 FIND HOSPITAL
               </Text>
             </TouchableOpacity>
+            <View style={{width: 1, backgroundColor: '#fff', height: 60}} />
             <TouchableOpacity
               style={buttonStyle}
               disabled={loading}
@@ -364,6 +367,7 @@ class Home extends Component {
                 FIND BLOODBANK
               </Text>
             </TouchableOpacity>
+            <View style={{width: 1, backgroundColor: '#fff', height: 60}} />
             <TouchableOpacity
               style={buttonStyle}
               disabled={loading}
@@ -432,7 +436,7 @@ class Home extends Component {
                   disabled={this.state.makePath}
                   theme={buttonTheme}
                   onPress={() =>
-                    this.setState({makePath: true, checkAlert: true, modal: false})
+                    this.setState({makePath: true, checkAlert: true})
                   }>
                   Show Route
                 </Button>
