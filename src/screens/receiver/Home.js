@@ -25,7 +25,8 @@ import Modal from 'react-native-modal';
 import {Picker} from '@react-native-community/picker';
 import UIStepper from 'react-native-ui-stepper';
 import {AndroidBackHandler} from 'react-navigation-backhandler';
-
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 
 class Home extends Component {
@@ -66,6 +67,7 @@ class Home extends Component {
         {label: 'AB-', value: 'AB-'},
         {label: 'O-', value: 'O-'},
       ],
+      userDetails: props.userDetails,
       numberOfBottles: 0,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -192,10 +194,37 @@ class Home extends Component {
   }
 
   onRequestDonor() {
-    this.setState({
-      selectedTab: 0,
-      modalRequest: true,
-    });
+    const today = moment(new Date());
+    let count;
+    firestore()
+      .collection('Requests')
+      .get()
+      .then((docs) => {
+        count = 0;
+        if (docs) {
+          docs.forEach((doc) => {
+            const donationDate = moment(doc.data().date);
+            console.log(donationDate);
+            const difference = today.diff(donationDate, 'days');
+            console.log(difference);
+            if (
+              doc.data().receiverId === this.state.userDetails.id &&
+              difference < 30
+            ) {
+              count = count + 1;
+            }
+          });
+          console.log(count);
+          if (count > 4) {
+            alert('Your monthly blood request limit exceeded.');
+          } else {
+            this.setState({
+              selectedTab: 0,
+              modalRequest: true,
+            });
+          }
+        }
+      });
   }
 
   onRequest() {
@@ -586,11 +615,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 8.25,
+    alignSelf: 'center',
   },
   selectedTextStyle: {
     color: 'black',
     fontWeight: 'bold',
     fontSize: 8.3,
+    alignSelf: 'center',
   },
   buttonStyle: {
     alignItems: 'center',

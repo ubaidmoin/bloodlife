@@ -27,7 +27,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import UIStepper from 'react-native-ui-stepper';
 import {Picker} from '@react-native-community/picker';
-import {moment} from 'moment';
+import moment from 'moment';
 import {AndroidBackHandler} from 'react-navigation-backhandler';
 
 import * as userDetailsAction from '../../actions/UserDetailsAction';
@@ -231,26 +231,30 @@ class DriverHome extends Component {
   }
 
   onAvailableChange() {
-    // const today = new Date();
-    // const lastDonated =  moment(this.state.userDetails.lastDonated, 'DD-MM-YYYY').toDate();
-    // const months = today.diff(lastDonated, 'months');
-    // if (months >= 3) {
-    if (!this.state.selectedOption) {
-      this.changeAvailabilityStatus(
-        true,
-        this.state.region.latitude,
-        this.state.region.longitude,
-      );
+    const today = moment(new Date());
+    const lastDonated = moment(this.state.userDetails.lastDonated);
+    const months = today.diff(lastDonated, 'months');
+    console.log(lastDonated, today, months);
+    if (months >= 3) {
+      if (!this.state.selectedOption) {
+        this.changeAvailabilityStatus(
+          true,
+          this.state.region.latitude,
+          this.state.region.longitude,
+        );
+      } else {
+        this.changeAvailabilityStatus(false, 0, 0);
+      }
+      this.setState({selectedOption: !this.state.selectedOption});
     } else {
-      this.changeAvailabilityStatus(false, 0, 0);
+      alert("It's been less than 3 months you last donated blood.");
     }
-    this.setState({selectedOption: !this.state.selectedOption});
-    // } else {
-    //     alert('It\'s been less than 3 months you last donated blood.');
-    // }
   }
 
   onAccept() {
+    this.setState({
+      selectedOption: false,
+    });
     firestore()
       .collection('Requests')
       .doc(this.state.requestId)
@@ -405,10 +409,37 @@ class DriverHome extends Component {
   }
 
   onRequestDonor() {
-    this.setState({
-      selectedTab: 0,
-      modalRequest: true,
-    });
+    const today = moment(new Date());
+    let count;
+    firestore()
+      .collection('Requests')
+      .get()
+      .then((docs) => {
+        count = 0;
+        if (docs) {
+          docs.forEach((doc) => {
+            const donationDate = moment(doc.data().date);
+            console.log(donationDate);
+            const difference = today.diff(donationDate, 'days');
+            console.log(difference);
+            if (
+              doc.data().receiverId === this.state.userDetails.id &&
+              difference < 30
+            ) {
+              count = count + 1;
+            }
+          });
+          console.log(count);
+          if (count > 4) {
+            alert('Your monthly blood request limit exceeded.');
+          } else {
+            this.setState({
+              selectedTab: 0,
+              modalRequest: true,
+            });
+          }
+        }
+      });
   }
 
   onRequest() {
@@ -749,7 +780,9 @@ class DriverHome extends Component {
                           {receiver.firstName + ' ' + receiver.lastName}
                         </Text>
                         <View style={ratings}>
-                          <Text style={nameStyle}>{receiver.ratings && receiver.ratings.toFixed(2)}</Text>
+                          <Text style={nameStyle}>
+                            {receiver.ratings && receiver.ratings.toFixed(2)}
+                          </Text>
                           <FontAwesomeIcon
                             name="star"
                             size={20}
@@ -975,6 +1008,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 8.25,
+    alignSelf: 'center',
   },
   availabilityTextStyle: {
     color: '#ff5d5b',
@@ -985,6 +1019,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     fontSize: 8.3,
+    alignSelf: 'center',
   },
   buttonStyle: {
     alignItems: 'center',

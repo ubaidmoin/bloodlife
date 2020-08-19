@@ -68,6 +68,9 @@ class Receivers extends Component {
           <View key={index}>
             <View style={list}>
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{padding: 5, marginRight: 5}}>
+                <Text style={{fontSize: 12, fontWeight: 'bold'}}>{index + 1}</Text>
+                </View>
                 <Image
                   source={
                     item.image === ''
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: Dimensions.get('screen').width * 0.05,
     backgroundColor: '#fff',
-    elevation: 1000,
+    elevation: 10,
     borderRadius: 5,
   },
   image: {

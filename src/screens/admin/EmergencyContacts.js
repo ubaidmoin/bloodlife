@@ -130,6 +130,9 @@ class EmergencyContacts extends Component {
   async onAddEvent() {
     let id = await this.generateEventId();
     await this.addEvent(id);
+    this.setState({
+      isModalVisible: false,
+    });
     this.componentDidMount();
   }
 
@@ -321,6 +324,7 @@ class EmergencyContacts extends Component {
                     name: '',
                     number: '',
                     loading: false,
+                    isModalVisible: false,
                   })
                 }
                 disabled={loading}>

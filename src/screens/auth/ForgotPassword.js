@@ -72,7 +72,7 @@ export default class ForgotPassword extends Component {
           label="Email"
           mode="outlined"
           style={{
-            height: 40,
+            height: 35,
             width: '80%',
           }}
           theme={{

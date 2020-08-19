@@ -69,26 +69,41 @@ class Receivers extends Component {
       .collection('Users')
       .onSnapshot((snapshot) => {
         let receivers = [];
+        let totalReceived;
         snapshot.forEach((user) => {
           if (user.data().userType === 'receiver') {
-            receivers.push({
-              id: user.id,
-              firstName: user.data().firstName,
-              lastName: user.data().lastName,
-              email: user.data().email,
-              phoneNo: user.data().phoneNo,
-              userType: user.data().userType,
-              ratings: user.data().ratings,
-              dob: user.data().dob,
-              address: user.data().address,
-              image: user.data().image,
-              blocked: user.data().blocked,
-            });
+            firestore()
+              .collection('Requests')
+              .get()
+              .then((doc) => {
+                totalReceived = 0;
+                doc.forEach((item) => {
+                  if (item.data().receiverId === user.id) {
+                    console.log(item.data().receiverId, user.id);
+                    totalReceived = totalReceived + 1;
+                  }
+                });
+                console.log(user.data().firstName + ' ' + totalReceived);
+                receivers.push({
+                  id: user.id,
+                  firstName: user.data().firstName,
+                  lastName: user.data().lastName,
+                  email: user.data().email,
+                  phoneNo: user.data().phoneNo,
+                  userType: user.data().userType,
+                  ratings: user.data().ratings,
+                  dob: user.data().dob,
+                  address: user.data().address,
+                  image: user.data().image,
+                  blocked: user.data().blocked,
+                  totalReceived: totalReceived,
+                });
+                this.setState({
+                  receivers: receivers,
+                  searchReceivers: receivers,
+                });
+              });
           }
-        });
-        this.setState({
-          receivers: receivers,
-          searchReceivers: receivers,
         });
       });
   }
@@ -154,14 +169,17 @@ class Receivers extends Component {
                   style={image}
                 />
                 <View style={{marginLeft: 5}}>
-                  <Text style={{fontWeight: 'bold', fontSize: 12, color: '#fff'}}>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 12, color: '#fff'}}>
                     {item.id}
                   </Text>
                   <Text style={title}>
                     {item.firstName + ' ' + item.lastName}
                   </Text>
                   <View style={styles.ratings}>
-                    <Text style={styles.textStyle}>{item.ratings.toFixed(2)}</Text>
+                    <Text style={styles.textStyle}>
+                      {item.ratings.toFixed(2)}
+                    </Text>
                     <FontAwesomeIcon name="star" size={15} color={'#fff'} />
                   </View>
                 </View>
@@ -201,10 +219,13 @@ class Receivers extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Email:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.email}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.email}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -214,10 +235,13 @@ class Receivers extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Phone Number:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.phoneNo}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.phoneNo}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -227,10 +251,29 @@ class Receivers extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                      Total Requests Received:
+                    </Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.totalReceived}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingHorizontal: 20,
+                    }}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Address:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.address}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.address}
+                    </Text>
                   </View>
                   <View style={{paddingHorizontal: '30%'}}>
                     <TouchableOpacity

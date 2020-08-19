@@ -203,7 +203,7 @@ export default class Register extends Component {
               label="First Name"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '39%',
               }}
               theme={{
@@ -218,7 +218,7 @@ export default class Register extends Component {
               label="Last Name"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '39%',
                 marginLeft: '2%',
               }}
@@ -235,7 +235,7 @@ export default class Register extends Component {
             label="Email"
             mode="outlined"
             style={{
-              height: 40,
+              height: 35,
               width: '80%',
             }}
             theme={{
@@ -253,7 +253,7 @@ export default class Register extends Component {
             )}
             mode="outlined"
             style={{
-              height: 40,
+              height: 35,
               width: '80%',
             }}
             theme={{
@@ -298,7 +298,7 @@ export default class Register extends Component {
             label="Address"
             mode="outlined"
             style={{
-              height: 40,
+              height: 35,
               width: '80%',
             }}
             theme={{
@@ -314,7 +314,7 @@ export default class Register extends Component {
             label="City"
             mode="outlined"
             style={{
-              height: 40,
+              height: 35,
               width: '80%',
             }}
             theme={{
@@ -330,7 +330,7 @@ export default class Register extends Component {
               label="Password"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '80%',
               }}
               theme={{
@@ -358,7 +358,7 @@ export default class Register extends Component {
             label="Confirm Password"
             mode="outlined"
             style={{
-              height: 40,
+              height: 35,
               width: '80%',
             }}
             theme={{

@@ -16,8 +16,15 @@ import DatePicker from 'react-native-datepicker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import moment from 'moment';
+import ImagePicker from 'react-native-image-picker';
 
 import * as Validations from '../../settings/Validations';
+
+const options = {
+  title: 'Select Photo',
+  takePhotoButtonTitle: 'Camera',
+  chooseFromLibraryButtonTitle: 'Library',
+};
 
 export default class AddDonor extends Component {
   constructor(props) {
@@ -76,6 +83,20 @@ export default class AddDonor extends Component {
         return (id = id + 1);
       });
     return 'BL-' + response;
+  }
+
+  pickImage() {
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        console.log('Cancelled');
+      } else if (response.error) {
+        console.log('Error: ', response.error);
+      } else {
+        this.setState({
+          image: response.data, //base64 response
+        });
+      }
+    });
   }
 
   addUser = (id) =>
@@ -238,6 +259,7 @@ export default class AddDonor extends Component {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
+            <TouchableOpacity onPress={() => this.pickImage()}>
           <Image
             source={
               image === ''
@@ -246,12 +268,13 @@ export default class AddDonor extends Component {
             }
             style={styles.imageStyle}
           />
+          </TouchableOpacity>
           <View style={{flexDirection: 'row'}}>
             <TextInput
               label="First Name"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '39%',
               }}
               theme={{
@@ -266,7 +289,7 @@ export default class AddDonor extends Component {
               label="Last Name"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '39%',
                 marginLeft: '2%',
               }}
@@ -502,7 +525,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   textInputStyle: {
-    height: 40,
+    height: 35,
     width: '80%',
   },
   selector: {

@@ -31,7 +31,9 @@ const DrawerContent = (props) => {
           </Text>
           {userDetails.userType !== 'admin' && (
             <View style={styles.ratings}>
-              <Text style={styles.textStyle}>{userDetails.ratings.toFixed(2)}</Text>
+              <Text style={styles.textStyle}>
+                {userDetails.ratings.toFixed(2)}
+              </Text>
               <FontAwesomeIcon name="star" size={20} color={'#ff5d5b'} />
             </View>
           )}
@@ -56,16 +58,20 @@ const DrawerContent = (props) => {
       <DrawerItemList {...props} />
       <TouchableOpacity
         style={{flexDirection: 'row', alignItems: 'center'}}
-        onPress={() => {
-          AsyncStorage.removeItem('@userDetails');
-          props.navigation.navigate('Auth');
+        onPress={async () => {
+          const res = await AsyncStorage.removeItem('@userDetails');
+          if (!res) {
+            const setShowFields = props.setShowFields;
+            setShowFields(true);
+            props.navigation.navigate('Auth');
+          }
         }}>
-          <EntypoIcon
-      style={{marginLeft: 17.5}}
-      name="log-out"
-      size={25}
-      color={'#696565'}
-    />
+        <EntypoIcon
+          style={{marginLeft: 17.5}}
+          name="log-out"
+          size={25}
+          color={'#696565'}
+        />
         <Text style={styles.logoutButtonTextStyle}>Log out</Text>
       </TouchableOpacity>
       {props.user === 'receiver' ? (
@@ -144,4 +150,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(userDetailsAction.mapStateToProps)(DrawerContent);
+export default connect(
+  userDetailsAction.mapStateToProps,
+  userDetailsAction.mapDispatchToProps,
+)(DrawerContent);

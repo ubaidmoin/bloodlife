@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {connect} from 'react-redux';
@@ -18,6 +19,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import * as userDetailsAction from '../../actions/UserDetailsAction';
 import * as actions from '../../actions/ActionTypes';
+import {AndroidBackHandler} from 'react-navigation-backhandler';
 
 class Login extends Component {
   constructor(props) {
@@ -29,6 +31,7 @@ class Login extends Component {
       error: '',
       loading: false,
       showPassword: true,
+      showFields: props.showFields,
     };
     this.animatedValue = new Animated.Value(0);
   }
@@ -51,8 +54,9 @@ class Login extends Component {
       useNativeDriver: true,
     }).start();
     const value = await AsyncStorage.getItem('@userDetails');
-    if (value !== null) {
-      console.log(value);
+    if (value) {
+      const setShowFields = this.props.setShowFields;
+      setShowFields(false);
       const userDetails = JSON.parse(value);
       if (userDetails) {
         const setUser = this.props.setUserData;
@@ -66,15 +70,23 @@ class Login extends Component {
         }
       }
     } else {
-      setTimeout(() => {
-        Animated.timing(this.state.opacity, {
-          toValue: 1,
-          duration: 500,
-          easing: Easing.ease,
-          useNativeDriver: true,
-        }).start();
-      }, 1000);
+      this.setState({
+        showFields: true,
+      });
     }
+    setTimeout(() => {
+      Animated.timing(this.state.opacity, {
+        toValue: 1,
+        duration: 500,
+        easing: Easing.ease,
+        useNativeDriver: true,
+      }).start();
+    }, 1000);
+  };
+
+  onBackButtonPressAndroid = () => {
+    BackHandler.exitApp();
+    return true;
   };
 
   onButtonPress() {
@@ -237,99 +249,115 @@ class Login extends Component {
     });
     let transformStyle = {...styles.logo, transform: [{scale: imageScale}]};
     return (
-      <KeyboardAvoidingView style={styles.container}>
-        <Animated.Image
-          source={require('../../assets/img/logo.jpeg')}
-          style={transformStyle}
-        />
-        <Animated.View
-          {...this.props}
-          style={[
-            {
-              opacity: this.state.opacity,
-              transform: [
-                {
-                  scale: this.state.opacity.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.85, 1],
-                  }),
-                },
-              ],
-            },
-            styles.form,
-          ]}>
-          <TextInput
-            label="Email"
-            mode="outlined"
-            style={{
-              height: 40,
-              width: '90%',
-            }}
-            theme={{
-              colors: {primary: '#ff5d5b', underlineColor: 'black'},
-            }}
-            selectionColor="#ff5d5b"
-            underlineColor="#ff5d5b"
-            value={this.state.email}
-            onChangeText={(email) => this.setState({email})}
+      <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
+        <KeyboardAvoidingView style={styles.container}>
+          <Animated.Image
+            source={require('../../assets/img/logo.jpeg')}
+            style={transformStyle}
           />
-          <View style={styles.searchSection}>
-            <TextInput
-              label="Password"
-              mode="outlined"
-              style={{
-                height: 40,
-                width: '90%',
-              }}
-              theme={{
-                colors: {
-                  primary: this.state.passwordMatch ? 'green' : '#ff5d5b',
-                  underlineColor: 'black',
+          {this.props.showFields && (
+            <Animated.View
+              {...this.props}
+              style={[
+                {
+                  opacity: this.state.opacity,
+                  transform: [
+                    {
+                      scale: this.state.opacity.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.85, 1],
+                      }),
+                    },
+                  ],
                 },
-              }}
-              selectionColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
-              underlineColor={this.state.passwordMatch ? 'green' : '#ff5d5b'}
-              value={this.state.password}
-              secureTextEntry={this.state.showPassword}
-              onChangeText={(password) => this.setState({password})}
-            />
-<TouchableOpacity style={{position: 'absolute', top: 7, right: 5, zIndex: 1000 }} onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
-            <EntypoIcon
-              style={styles.searchIcon}
-              name="eye"
-              size={30}
-              color="#000"
-            />
-            </TouchableOpacity>
-          </View>
-          <View style={{paddingTop: 10}}>
-            <TouchableOpacity
-              style={
-                this.state.loading
-                  ? styles.buttonLoadingStyle
-                  : styles.buttonStyle
-              }
-              disabled={this.state.loading}
-              onPress={() => this.onButtonPress()}>
-              {this.state.loading ? (
-                <ActivityIndicator size="small" color="#ff5d5b" />
-              ) : (
-                <Text style={styles.textStyle}>{'login'.toUpperCase()}</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            style={{paddingTop: 10}}
-            onPress={() => this.props.navigation.navigate('Register')}>
-            <Text style={{color: '#ff5d5b'}}>Don't have an account?</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{paddingTop: 10}}
-            onPress={() => this.props.navigation.navigate('ForgotPassword')}>
-            <Text style={{color: '#ff5d5b'}}>Forgot Password?</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </KeyboardAvoidingView>
+                styles.form,
+              ]}>
+              <TextInput
+                label="Email"
+                mode="outlined"
+                style={{
+                  height: 35,
+                  width: '90%',
+                }}
+                theme={{
+                  colors: {primary: '#ff5d5b', underlineColor: 'black'},
+                }}
+                selectionColor="#ff5d5b"
+                underlineColor="#ff5d5b"
+                value={this.state.email}
+                onChangeText={(email) => this.setState({email})}
+              />
+              <View style={styles.searchSection}>
+                <TextInput
+                  label="Password"
+                  mode="outlined"
+                  style={{
+                    height: 35,
+                    width: '90%',
+                  }}
+                  theme={{
+                    colors: {
+                      primary: this.state.passwordMatch ? 'green' : '#ff5d5b',
+                      underlineColor: 'black',
+                    },
+                  }}
+                  selectionColor={
+                    this.state.passwordMatch ? 'green' : '#ff5d5b'
+                  }
+                  underlineColor={
+                    this.state.passwordMatch ? 'green' : '#ff5d5b'
+                  }
+                  value={this.state.password}
+                  secureTextEntry={this.state.showPassword}
+                  onChangeText={(password) => this.setState({password})}
+                />
+                <TouchableOpacity
+                  style={{position: 'absolute', top: 7, right: 5, zIndex: 1000}}
+                  onPress={() =>
+                    this.setState({showPassword: !this.state.showPassword})
+                  }>
+                  <EntypoIcon
+                    style={styles.searchIcon}
+                    name="eye"
+                    size={30}
+                    color="#000"
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={{paddingTop: 10}}>
+                <TouchableOpacity
+                  style={
+                    this.state.loading
+                      ? styles.buttonLoadingStyle
+                      : styles.buttonStyle
+                  }
+                  disabled={this.state.loading}
+                  onPress={() => this.onButtonPress()}>
+                  {this.state.loading ? (
+                    <ActivityIndicator size="small" color="#ff5d5b" />
+                  ) : (
+                    <Text style={styles.textStyle}>
+                      {'login'.toUpperCase()}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity
+                style={{paddingTop: 10}}
+                onPress={() => this.props.navigation.navigate('Register')}>
+                <Text style={{color: '#ff5d5b'}}>Don't have an account?</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{paddingTop: 10}}
+                onPress={() =>
+                  this.props.navigation.navigate('ForgotPassword')
+                }>
+                <Text style={{color: '#ff5d5b'}}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+        </KeyboardAvoidingView>
+      </AndroidBackHandler>
     );
   }
 }

@@ -137,7 +137,7 @@ class Request extends Component {
                     });
                     this.props.navigation.pop();
                   }),
-              60000,
+              30000,
             );
           })
           .catch((error) => {
@@ -399,7 +399,7 @@ class Request extends Component {
                       {donor.firstName + ' ' + donor.lastName}
                     </Text>
                     <View style={ratings}>
-                      <Text style={textStyle}>{donor.ratings.toFixed(2)}</Text>
+                      <Text style={textStyle}>{donor.ratings && donor.ratings.toFixed(2)}</Text>
                       <FontAwesomeIcon
                         name="star"
                         size={20}
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 1000,
+    elevation: 10,
     borderRadius: 10,
     height: 100,
     left: Dimensions.get('screen').width * 0.3,

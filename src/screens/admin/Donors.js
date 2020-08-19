@@ -99,31 +99,49 @@ class Donors extends Component {
       .collection('Users')
       .onSnapshot((snapshot) => {
         let donors = [];
+        let totalReceived;
+        let totalDonated;
         snapshot.forEach((user) => {
           if (user.data().userType === 'donor') {
-            donors.push({
-              id: user.id,
-              firstName: user.data().firstName,
-              lastName: user.data().lastName,
-              email: user.data().email,
-              password: user.data().password,
-              phoneNo: user.data().phoneNo,
-              userType: user.data().userType,
-              ratings: user.data().ratings,
-              dob: user.data().dob,
-              address: user.data().address,
-              image: user.data().image,
-              weight: user.data().weight,
-              lastDonated: user.data().lastDonated,
-              bloodGroup: user.data().bloodGroup,
-              disease: user.data().disease,
-              blocked: user.data().blocked,
-            });
+            firestore()
+              .collection('Requests')
+              .get()
+              .then((doc) => {
+                totalReceived = 0;
+                totalDonated = 0;
+                doc.forEach((item) => {
+                  if (item.data().receiverId === user.id) {
+                    totalReceived = totalReceived + 1;
+                  } else if (item.data().donorId === user.id) {
+                    totalDonated = totalDonated + 1;
+                  }
+                });
+                donors.push({
+                  id: user.id,
+                  firstName: user.data().firstName,
+                  lastName: user.data().lastName,
+                  email: user.data().email,
+                  password: user.data().password,
+                  phoneNo: user.data().phoneNo,
+                  userType: user.data().userType,
+                  ratings: user.data().ratings,
+                  dob: user.data().dob,
+                  address: user.data().address,
+                  image: user.data().image,
+                  weight: user.data().weight,
+                  lastDonated: user.data().lastDonated,
+                  bloodGroup: user.data().bloodGroup,
+                  disease: user.data().disease,
+                  blocked: user.data().blocked,
+                  totalReceived: totalReceived,
+                  totalDonated: totalDonated,
+                });
+                this.setState({
+                  donors: donors,
+                  searchDonors: donors,
+                });
+              });
           }
-        });
-        this.setState({
-          donors: donors,
-          searchDonors: donors,
         });
       });
   }
@@ -206,14 +224,17 @@ class Donors extends Component {
                   style={image}
                 />
                 <View style={{marginLeft: 5}}>
-                  <Text style={{fontWeight: 'bold', fontSize: 12, color: '#fff'}}>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 12, color: '#fff'}}>
                     {item.id}
                   </Text>
                   <Text style={title}>
                     {item.firstName + ' ' + item.lastName}
                   </Text>
                   <View style={styles.ratings}>
-                    <Text style={styles.textStyle}>{item.ratings.toFixed(2)}</Text>
+                    <Text style={styles.textStyle}>
+                      {item.ratings.toFixed(2)}
+                    </Text>
                     <FontAwesomeIcon name="star" size={15} color={'#fff'} />
                   </View>
                 </View>
@@ -253,10 +274,13 @@ class Donors extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Blood Group:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.bloodGroup}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.bloodGroup}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -266,10 +290,13 @@ class Donors extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Weight:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.weight}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.weight}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -279,10 +306,13 @@ class Donors extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Last Donated:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.lastDonated}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.lastDonated}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -292,10 +322,13 @@ class Donors extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Phone Number:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.phoneNo}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.phoneNo}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -305,10 +338,45 @@ class Donors extends Component {
                       width: '100%',
                       paddingHorizontal: 20,
                     }}>
-                    <Text style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Have Disease:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>{item.disease}</Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.disease}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingHorizontal: 20,
+                    }}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                      Total Donations:
+                    </Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.totalDonated}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingHorizontal: 20,
+                    }}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
+                      Total Requests Received:
+                    </Text>
+                    <Text style={{fontSize: 15, color: '#fff'}}>
+                      {item.totalReceived}
+                    </Text>
                   </View>
                   <View
                     style={{
@@ -349,8 +417,7 @@ class Donors extends Component {
     const {search, blockButtonStyle, blockedTextStyle} = styles;
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
-        <View
-          style={{width: '100%', height: '100%', backgroundColor: '#fff'}}>
+        <View style={{width: '100%', height: '100%', backgroundColor: '#fff'}}>
           <View style={search}>
             <TextInput
               label="Search"
@@ -377,7 +444,9 @@ class Donors extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <View>{this.renderDonors()}</View>
+          <View style={{height: Dimensions.get('screen').height * 0.55}}>
+            {this.renderDonors()}
+          </View>
         </View>
       </AndroidBackHandler>
     );

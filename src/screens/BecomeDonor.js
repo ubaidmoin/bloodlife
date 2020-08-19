@@ -157,7 +157,7 @@ class BecomeDonor extends Component {
               label="First Name"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '39%',
               }}
               theme={{
@@ -173,7 +173,7 @@ class BecomeDonor extends Component {
               label="Last Name"
               mode="outlined"
               style={{
-                height: 40,
+                height: 35,
                 width: '39%',
                 marginLeft: '2%',
               }}
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   textInputStyle: {
-    height: 40,
+    height: 35,
     width: '80%',
   },
   selector: {
