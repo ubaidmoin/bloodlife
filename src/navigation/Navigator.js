@@ -18,6 +18,7 @@ import EventScreen from '../screens/common/Events';
 import HistoryScreen from '../screens/common/History';
 import ContactsScreen from '../screens/common/EmergencyContacts';
 import ContactScreen from '../screens/common/Contact';
+import PrivacyScreen from '../screens/common/Privacy';
 import FeedbackScreen from '../screens/common/Feedback';
 //Donor Screens
 import DonorHomeScreen from '../screens/donor/Home';
@@ -162,6 +163,18 @@ const AdminFeedbacksStack = () => (
   </Stack.Navigator>
 );
 
+const PrivacyAdminStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Privacy Policy"
+      component={PrivacyScreen}
+      options={({navigation}) =>
+        HeaderWithMenu({title: 'Privacy Policy'}, navigation)
+      }
+    />
+  </Stack.Navigator>
+);
+
 const AdminDrawer = () => (
   <Drawer.Navigator
     drawerContent={(props) => <DrawerContent user="admin" {...props} />}
@@ -212,6 +225,14 @@ const AdminDrawer = () => (
       options={{
         title: 'Feedback',
         drawerIcon: ({ color }) => <MaterialIcons name={"feedback"} color={color} size={25} />,
+      }}
+    />
+    <Drawer.Screen
+      name="Privacy"
+      component={PrivacyAdminStack}
+      options={{
+        title: 'Privacy Policy',
+        drawerIcon: ({ color }) => <MaterialIcons name={"security"} color={color} size={25} />,
       }}
     />
     {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
@@ -315,6 +336,18 @@ const ContactDonorStack = () => (
   </Stack.Navigator>
 );
 
+const PrivacyDonorStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Privacy Policy"
+      component={PrivacyScreen}
+      options={({navigation}) =>
+        HeaderWithMenu({title: 'Privacy Policy'}, navigation)
+      }
+    />
+  </Stack.Navigator>
+);
+
 const HistoryDonorStack = () => (
   <Stack.Navigator>
     <Stack.Screen
@@ -377,6 +410,14 @@ const DonorDrawer = () => (
       options={{
         title: 'Contact Us',
         drawerIcon: ({ color }) => <FontAwesomeIcon name={"phone"} color={color} size={25} />,
+      }}
+    />
+    <Drawer.Screen
+      name="Privacy"
+      component={PrivacyDonorStack}
+      options={{
+        title: 'Privacy Policy',
+        drawerIcon: ({ color }) => <MaterialIcons name={"security"} color={color} size={25} />,
       }}
     />
     {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
@@ -455,6 +496,18 @@ const ContactReceiverStack = () => (
   </Stack.Navigator>
 );
 
+const PrivacyReceiverStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Privacy Policy"
+      component={PrivacyScreen}
+      options={({navigation}) =>
+        HeaderWithMenu({title: 'Privacy Policy'}, navigation)
+      }
+    />
+  </Stack.Navigator>
+);
+
 const ReceiverDonateNowStack = () => (
   <Stack.Navigator>
     <Stack.Screen
@@ -527,6 +580,14 @@ const ReceiverDrawer = () => (
       options={{
         title: 'Contact Us',
         drawerIcon: ({ color }) => <FontAwesomeIcon name={"phone"} color={color} size={25} />,
+      }}
+    />
+    <Drawer.Screen
+      name="Privacy"
+      component={PrivacyReceiverStack}
+      options={{
+        title: 'Privacy Policy',
+        drawerIcon: ({ color }) => <MaterialIcons name={"security"} color={color} size={25} />,
       }}
     />
     {/* <Drawer.Screen name="Logout" component={AuthDrawer} options={{title: 'Log out'}} />     */}
