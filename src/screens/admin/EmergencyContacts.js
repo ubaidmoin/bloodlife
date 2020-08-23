@@ -182,13 +182,33 @@ class EmergencyContacts extends Component {
             <Text style={phoneNo}>Contact Number: {item.number}</Text>
           </View>
           <TouchableOpacity
+            style={{justifyContent: 'center', alignItems: 'center'}}
             onPress={() => Communications.phonecall(item.number, true)}>
-            <FontAwesomeIcon name="phone" size={30} color="#fff" />
-            <Text style={phoneNo}>Dial</Text>
+            <FontAwesomeIcon name="phone" size={20} color="#fff" />
+            <Text style={{fontSize: 12, color: '#fff'}}>Dial</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{justifyContent: 'center', alignItems: 'center'}}
+            onPress={() => this.removeContacts(index)}>
+            <EntypoIcon name="cross" size={20} color="#fff" />
+            <Text style={{fontSize: 12, color: '#fff'}}>Remove</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
+  }
+
+  removeContacts(index) {
+    let data = [...this.state.emergencyContacts];
+    let item = data[index];
+    firestore()
+      .collection('EC')
+      .doc(item.id)
+      .delete()
+      .then(() => {
+        alert('Emergency Contact Deleted.');
+        this.componentDidMount();
+      });
   }
 
   render() {

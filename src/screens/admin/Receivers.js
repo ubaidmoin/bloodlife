@@ -271,7 +271,7 @@ class Receivers extends Component {
                       style={{fontSize: 15, fontWeight: 'bold', color: '#fff'}}>
                       Address:
                     </Text>
-                    <Text style={{fontSize: 15, color: '#fff'}}>
+                    <Text style={{fontSize: 15, color: '#fff', width: Dimensions.get('window').width * 0.67}}>
                       {item.address}
                     </Text>
                   </View>
@@ -389,6 +389,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
+    width: Dimensions.get('window').width * .55,
   },
   historyTitleContainer: {
     flexDirection: 'row',

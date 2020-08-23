@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    width: Dimensions.get('screen').width * 0.5,
   },
   historyTitleContainer: {
     flexDirection: 'row',
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
   textStyle1: {
     fontSize: 12,
     marginLeft: 5,
-    width: Dimensions.get('screen').width * 0.55,
+    width: Dimensions.get('screen').width * 0.53,
   },
 });
 

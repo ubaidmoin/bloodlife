@@ -60,6 +60,51 @@ class Profile extends Component {
     });
   }
 
+  pickImageFromCamera() {
+    ImagePicker.launchCamera(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        //const source = { uri: response.uri };
+        console.log(response.uri);
+        // You can also display the image using data:
+        //let source = {  response.data };//already added this thing
+
+        this.setState({
+          image: response.data, //source,base64
+        });
+        //console.warn(this.state.avatar)
+      }
+    });
+  }
+
+  pickImageFromLibrary() {
+    ImagePicker.launchImageLibrary(options, (response) => {
+      console.log(response.customButton);
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        //const source = { uri: response.uri };
+        console.log(response.uri);
+        // You can also display the image using data:
+        //let source = {  response.data };//already added this thing
+
+        this.setState({
+          image: response.data, //source,base64
+        });
+        //console.warn(this.state.avatar)
+      }
+    });
+  }
+
   updateProfile() {
     this.setState({
       loading: true,
@@ -123,7 +168,9 @@ class Profile extends Component {
     } = this.state;
     return (
       <KeyboardAvoidingView style={container}>
-        <TouchableOpacity onPress={() => this.pickImage()}>
+        <TouchableOpacity
+        // onPress={() => this.pickImage()}
+        >
           <Image
             source={
               image === ''
@@ -133,6 +180,47 @@ class Profile extends Component {
             style={styles.imageStyle}
           />
         </TouchableOpacity>
+        <View
+          style={{
+            width: Dimensions.get('screen').width * 0.9,
+            marginHorizontal: Dimensions.get('screen').width * 0.05,
+            marginVertical: 10,
+            elevation: 1000,
+            // backgroundColor: '#ffffff',
+            padding: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#ff5d5b',
+              height: 25,
+              width: 150,
+              borderWidth: 1,
+              borderColor: '#fea39e',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 5,
+            }}
+            onPress={() => this.pickImageFromCamera()}>
+            <Text style={{color: 'white'}}>Take from Camera</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#ff5d5b',
+              height: 25,
+              width: 150,
+              borderWidth: 1,
+              borderColor: '#fea39e',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 5,
+            }}
+            onPress={() => this.pickImageFromLibrary()}>
+            <Text style={{color: 'white'}}>Select from Library</Text>
+          </TouchableOpacity>
+        </View>
         <View style={{flexDirection: 'row'}}>
           <TextInput
             label="First Name"
