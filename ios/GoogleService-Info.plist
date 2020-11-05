@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>495631980878-tebs2e3tnbvl371pdlk28d9k58f91ir3.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.495631980878-tebs2e3tnbvl371pdlk28d9k58f91ir3</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBiZehrPaXO8g1Zj1MLaPxVrfN41iNl0ek</string>
+	<key>GCM_SENDER_ID</key>
+	<string>495631980878</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.umeedenoa.bloodapp</string>
+	<key>PROJECT_ID</key>
+	<string>bloodlife-f9374</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bloodlife-f9374.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:495631980878:ios:9545c2e14928949d11261f</string>
+	<key>DATABASE_URL</key>
+	<string>https://bloodlife-f9374.firebaseio.com</string>
+</dict>
+</plist>

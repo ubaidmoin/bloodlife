@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  StatusBar
 } from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import {Picker} from '@react-native-community/picker';
@@ -138,6 +139,7 @@ class BecomeDonor extends Component {
     } = this.state;
     return (
       <KeyboardAvoidingView style={container}>
+        <StatusBar barStyle="dark-content" />
         <ScrollView
           style={{width: Dimensions.get('screen').width}}
           contentContainerStyle={{

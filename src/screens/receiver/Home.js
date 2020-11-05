@@ -10,6 +10,7 @@ import {
   BackHandler,
   PermissionsAndroid,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import {Button} from 'react-native-paper';
 import {connect} from 'react-redux';
@@ -81,18 +82,22 @@ class Home extends Component {
   async componentDidMount() {
     // BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        this.getCurrentPosition();
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          this.getCurrentPosition();
+        } else {
+          console.log('Location permission denied');
+        }
       } else {
-        console.log('Location permission denied');
+        this.getCurrentPosition();
       }
     } catch (err) {
       console.warn(err);
@@ -291,7 +296,7 @@ class Home extends Component {
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
         <View style={container}>
-          <StatusBar backgroundColor="blue" barStyle="light-content" />
+        <StatusBar barStyle="dark-content" />
           <MapView
             style={mapStyle}
             region={this.state.region}

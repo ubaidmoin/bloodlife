@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   Modal,
+  StatusBar
 } from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import ImagePicker from 'react-native-image-picker';
@@ -168,6 +169,7 @@ class Profile extends Component {
     } = this.state;
     return (
       <KeyboardAvoidingView style={container}>
+        <StatusBar barStyle="dark-content" />
         <TouchableOpacity
         // onPress={() => this.pickImage()}
         >

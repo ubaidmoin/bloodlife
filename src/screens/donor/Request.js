@@ -6,9 +6,6 @@ import {
   StatusBar,
   Dimensions,
   Image,
-  TouchableOpacity,
-  BackHandler,
-  PermissionsAndroid,
   ActivityIndicator,
 } from 'react-native';
 import {Button} from 'react-native-paper';
@@ -327,7 +324,7 @@ class Request extends Component {
     const {latitude, longitude} = this.state.region;
     return (
       <View style={container}>
-        <StatusBar backgroundColor="blue" barStyle="light-content" />
+        <StatusBar barStyle="dark-content" />
         <MapView
           style={mapStyle}
           region={this.state.region}

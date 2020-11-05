@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator,
   BackHandler,
+  StatusBar
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import {connect} from 'react-redux';
@@ -250,6 +251,7 @@ class Login extends Component {
     let transformStyle = {...styles.logo, transform: [{scale: imageScale}]};
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
+        <StatusBar barStyle="dark-content" />
         <KeyboardAvoidingView style={styles.container}>
           <Animated.Image
             source={require('../../assets/img/logo.jpeg')}
@@ -282,6 +284,7 @@ class Login extends Component {
                 theme={{
                   colors: {primary: '#ff5d5b', underlineColor: 'black'},
                 }}
+                autoCapitalize={"none"}
                 selectionColor="#ff5d5b"
                 underlineColor="#ff5d5b"
                 value={this.state.email}
@@ -312,7 +315,7 @@ class Login extends Component {
                   onChangeText={(password) => this.setState({password})}
                 />
                 <TouchableOpacity
-                  style={{position: 'absolute', top: 7, right: 5, zIndex: 1000}}
+                  style={{position: 'absolute', top: 12, right: 5, zIndex: 1000}}
                   onPress={() =>
                     this.setState({showPassword: !this.state.showPassword})
                   }>

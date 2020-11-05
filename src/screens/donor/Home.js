@@ -10,6 +10,7 @@ import {
   BackHandler,
   Switch,
   PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import {Button} from 'react-native-paper';
 import MapView, {Marker} from 'react-native-maps';
@@ -97,15 +98,37 @@ class DriverHome extends Component {
 
   async componentDidMount() {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      if (Platform.OS === "android") {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              var lat = parseFloat(position.coords.latitude);
+              var long = parseFloat(position.coords.longitude);
+  
+              var region = {
+                latitude: lat,
+                longitude: long,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              };
+  
+              this.setState({region: region});
+            },
+            (error) => alert(JSON.stringify(error)),
+            {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+          );
+        } else {
+          console.log('Camera permission denied');
+        }
+      } else {
         Geolocation.getCurrentPosition(
           (position) => {
             var lat = parseFloat(position.coords.latitude);
@@ -123,8 +146,6 @@ class DriverHome extends Component {
           (error) => alert(JSON.stringify(error)),
           {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
         );
-      } else {
-        console.log('Camera permission denied');
       }
     } catch (err) {
       console.warn(err);
@@ -533,7 +554,7 @@ class DriverHome extends Component {
     return (
       <AndroidBackHandler onBackPress={this.onBackButtonPressAndroid}>
         <View style={container}>
-          <StatusBar backgroundColor="blue" barStyle="light-content" />
+          <StatusBar barStyle="dark-content" />
           <MapView
             style={{
               height: Dimensions.get('window').height,
